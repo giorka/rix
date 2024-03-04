@@ -4,6 +4,7 @@ djangorestframework>=0
 
 # db
 psycopg2>=0
+redis>=0
 
 # .env
 python-dotenv>=0
