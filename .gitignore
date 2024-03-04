@@ -172,3 +172,4 @@ modules.xml
 *.ipr
 
 *.rdb
+/migrations/
