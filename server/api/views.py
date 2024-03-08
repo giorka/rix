@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 
+from django.contrib.auth import login
 from rest_framework import views
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from . import db
@@ -9,6 +11,7 @@ from . import utils
 
 
 class RegisterAPIView(views.APIView):
+    permission_classes = (~IsAuthenticated,)
     serializer_class = serializers.UserRegisterFormSerializer
 
     class Meta:
@@ -58,6 +61,9 @@ class RegisterAPIView(views.APIView):
 
 
 class VerifyAPIView(views.APIView):
+    permission_classes = (~IsAuthenticated,)
+    user_serializer_class = serializers.UserSerializer
+    user_model = user_serializer_class.Meta.model
     serializer_class = serializers.UserVerificationSerializer
 
     def post(self, request) -> Response:
@@ -80,44 +86,19 @@ class VerifyAPIView(views.APIView):
                 status=400,
             )
 
+        db.collection.delete_one({"_id": record["_id"]})
 
+        user = self.user_model.objects.create_user(
+            username=record.get('username'),
+            password=utils.Text(record.get('password')).decode(),
+            email=record.get('email'),
 
-# class VerifyAPIView(views.APIView):
-#     serializer_class = serializers.VerifyFormSerializer
-#
-#     class Meta:
-#         CODE_EXPIRE_TIME = (60 * 2)
-#
-#     def post(self, request) -> Response:
-#         serializer = self.serializer_class(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#
-#         email_address = serializer.validated_data['email']
-#
-#         if not constants.redis.get(name=email_address):
-#             code = utils.get_and_send_code(email_address=email_address)
-#
-#             pipeline = constants.redis.pipeline()
-#             pipeline.set(name=email_address, value=code)
-#             pipeline.expire(name=email_address, time=self.Meta.CODE_EXPIRE_TIME)
-#             pipeline.execute()
-#
-#         return Response(
-#             data=dict(
-#                 detail='OK'
-#             ),
-#             status=200,
-#         )
-#
-#
-# class RegisterAPIView(views.APIView):
-#     serializer_class = serializers.UserRegisterFormSerializer
-#
-#     def post(self, request) -> Response:
-#         serializer = self.serializer_class(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         obj = serializer.save()
-#
-#         return Response(
-#             data=serializers.UserSerializer(obj).data
-#         )
+        )
+
+        login(request=request, user=user)
+
+        return Response(
+            data=self.user_serializer_class(
+                user
+            ).data
+        )
