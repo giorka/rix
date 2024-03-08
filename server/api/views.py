@@ -11,7 +11,7 @@ from . import utils
 
 
 class RegisterAPIView(views.APIView):
-    permission_classes = (~IsAuthenticated,)
+    # permission_classes = (~IsAuthenticated,)
     serializer_class = serializers.UserRegisterFormSerializer
 
     class Meta:
@@ -21,6 +21,7 @@ class RegisterAPIView(views.APIView):
 
         )
         DOCUMENT_EXPIRE_TIME = timedelta(seconds=(60 * 2))
+        ATTEMPTS_COUNT = 3
 
     def post(self, request) -> Response:
         serializer = self.serializer_class(data=request.data)
@@ -41,13 +42,17 @@ class RegisterAPIView(views.APIView):
                 )
 
         email = utils.Email(email_address=data['email'])
-        data['password'] = utils.Text(string=data['password']).encode()
         email.send_code()
+
+        data['password'] = utils.Text(string=data['password']).encode()
 
         db.collection.insert_one(
             document=(
                     data
-                    | dict(code=email.code)
+                    | dict(
+                        code=email.code,
+                        attemptsLeft=self.Meta.ATTEMPTS_COUNT,
+                    )
                     | {'expirationTime': datetime.utcnow() + self.Meta.DOCUMENT_EXPIRE_TIME}
             )
         )
@@ -61,7 +66,7 @@ class RegisterAPIView(views.APIView):
 
 
 class VerifyAPIView(views.APIView):
-    permission_classes = (~IsAuthenticated,)
+    # permission_classes = (~IsAuthenticated,)
     user_serializer_class = serializers.UserSerializer
     user_model = user_serializer_class.Meta.model
     serializer_class = serializers.UserVerificationSerializer
@@ -70,23 +75,28 @@ class VerifyAPIView(views.APIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
+        data = serializer.validated_data
+
         record = db.collection.find_one(
             dict(
-                email=serializer.validated_data.get('email'),
-                code=serializer.validated_data.get('code'),
-
+                email=data.get('email')
             )
-        )
+        ) or {}
 
-        if not record:
+        if record.get('code') != data.get('code'):
+            if 'email' in record:
+                if record['attemptsLeft'] == 0:
+                    db.collection.delete_one({"_id": record["_id"]})
+
+                record['attemptsLeft'] -= 1
+                db.collection.replace_one({"_id": record["_id"]}, record)
+
             return Response(
                 data=dict(
                     code=['The code has expired.']
                 ),
                 status=400,
             )
-
-        db.collection.delete_one({"_id": record["_id"]})
 
         user = self.user_model.objects.create_user(
             username=record.get('username'),
