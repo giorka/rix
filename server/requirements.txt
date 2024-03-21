@@ -21,3 +21,6 @@ django_imap_backend>=0
 
 # optimize
 celery>=0
+
+# API protection
+django_ratelimit>=0
