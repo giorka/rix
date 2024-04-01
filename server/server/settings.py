@@ -21,6 +21,7 @@ DJANGO_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_imap_backend',
+    'v1',
 ]
 
 INSTALLED_APPS = [
@@ -58,6 +59,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'server.wsgi.application'
+
+AUTH_USER_MODEL = 'v1.User'
 
 DATABASES = {  # pip install psycopg2
     'default': {
@@ -98,16 +101,18 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = getenv(key='EMAIL_HOST')
-# EMAIL_PORT = getenv(key='EMAIL_PORT')
-# EMAIL_USE_SSL = {'true': True, 'false': False}.get(getenv(key='EMAIL_USE_SSL'))
-#
-# EMAIL_HOST_USER = getenv(key='EMAIL_HOST_USER')
-# EMAIL_HOST_PASSWORD = getenv(key='EMAIL_HOST_PASSWORD')
-#
-# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-# SERVER_EMAIL = EMAIL_HOST_USER
-# EMAIL_ADMIN = EMAIL_HOST_USER
+
+if not DEBUG:
+    EMAIL_HOST = getenv(key='EMAIL_HOST')
+    EMAIL_PORT = getenv(key='EMAIL_PORT')
+    EMAIL_USE_SSL = {'true': True, 'false': False}.get(getenv(key='EMAIL_USE_SSL'))
+
+    EMAIL_HOST_USER = getenv(key='EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = getenv(key='EMAIL_HOST_PASSWORD')
+
+    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+    SERVER_EMAIL = EMAIL_HOST_USER
+    EMAIL_ADMIN = EMAIL_HOST_USER
 
 MONGO_PORT = 27017
 MONGO_HOST = 'mongodb://localhost:' + str(MONGO_PORT) + '/'
