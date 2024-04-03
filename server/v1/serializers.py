@@ -143,7 +143,7 @@ class UserVerificationSerializer(serializers.Serializer):
 
         return value
 
-    def create(self, validated_data: dict) -> AbstractUser:
+    def create(self, validated_data: dict) -> dict:
         db.collection.delete_one({"_id": self._record["_id"]})
 
         user: AbstractUser = self.Meta.model.objects.create_user(
@@ -152,4 +152,6 @@ class UserVerificationSerializer(serializers.Serializer):
             password=utils.Text(string=self._record['password']).decode(),
         )
 
-        return user
+        auth_token: str = login(request=None, user=user)
+
+        return validated_data | dict(auth_token=auth_token)
