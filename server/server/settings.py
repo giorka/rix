@@ -25,11 +25,16 @@ DJANGO_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_imap_backend',
-    'v1',
 ]
+
+APPS = (
+    'v1',
+    'v1__auth',
+)
 
 INSTALLED_APPS = [
     *DJANGO_APPS,
+    *APPS,
     'rest_framework',
     'djoser',
     'rest_framework.authtoken',
@@ -66,7 +71,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'server.wsgi.application'
 
-AUTH_USER_MODEL = 'v1.User'
+AUTH_USER_MODEL = 'v1__auth.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
