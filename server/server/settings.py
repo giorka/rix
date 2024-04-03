@@ -2,16 +2,20 @@ from os import getenv
 from pathlib import Path
 
 from dotenv import load_dotenv
-
-load_dotenv()
+from json import loads
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+DEBUG = loads(getenv(key='DEBUG'))
+
+if DEBUG:
+    load_dotenv()
+
 SECRET_KEY = getenv(key='SECRET_KEY')
 
-DEBUG = {'true': True, 'false': False}.get(getenv(key='DEBUG'))
-
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '127.0.0.1'
+]
 
 DJANGO_APPS = [
     'django.contrib.admin',
@@ -27,6 +31,8 @@ DJANGO_APPS = [
 INSTALLED_APPS = [
     *DJANGO_APPS,
     'rest_framework',
+    'djoser',
+    'rest_framework.authtoken',
 
 ]
 
@@ -62,9 +68,15 @@ WSGI_APPLICATION = 'server.wsgi.application'
 
 AUTH_USER_MODEL = 'v1.User'
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+}
+
 DATABASES = {  # pip install psycopg2
     'default': {
-        'ENGINE': 'django.db.backends.' + getenv(key='ENGINE'),
+        'ENGINE': 'django.db.backends.' + getenv(key='DB_ENGINE'),
         'NAME': getenv(key='DB_NAME'),
         'USER': getenv(key='DB_USER'),
         'PASSWORD': getenv(key='DB_PASSWORD'),
@@ -105,7 +117,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 if not DEBUG:
     EMAIL_HOST = getenv(key='EMAIL_HOST')
     EMAIL_PORT = getenv(key='EMAIL_PORT')
-    EMAIL_USE_SSL = {'true': True, 'false': False}.get(getenv(key='EMAIL_USE_SSL'))
+    EMAIL_USE_SSL = loads(getenv(key='EMAIL_USE_SSL'))
 
     EMAIL_HOST_USER = getenv(key='EMAIL_HOST_USER')
     EMAIL_HOST_PASSWORD = getenv(key='EMAIL_HOST_PASSWORD')
@@ -115,7 +127,7 @@ if not DEBUG:
     EMAIL_ADMIN = EMAIL_HOST_USER
 
 MONGO_PORT = 27017
-MONGO_HOST = 'mongodb://localhost:' + str(MONGO_PORT) + '/'
+MONGO_HOST = f'mongodb://{getenv(key="MONGO_HOST")}:' + str(MONGO_PORT) + '/'
 MONGO_KEY = getenv(key='MONGO_KEY')
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'

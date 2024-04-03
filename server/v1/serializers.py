@@ -3,6 +3,7 @@ from typing import NoReturn, Optional, Tuple
 
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinLengthValidator
+from djoser.utils import login_user as login
 from rest_framework import fields
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -92,7 +93,14 @@ class UserRegisterFormSerializer(serializers.ModelSerializer):
 
 
 class UserVerificationSerializer(serializers.Serializer):
-    user: UserSerializer = UserSerializer(read_only=True, )
+    auth_token: serializers.CharField = serializers.CharField(
+        max_length=40,
+        validators=(
+            MinLengthValidator(6),
+        ),
+        read_only=True
+    )
+    # user: UserSerializer = UserSerializer(read_only=True,)
     email: serializers.EmailField = serializers.EmailField()
     code: serializers.CharField = serializers.CharField(
         max_length=6,
@@ -135,7 +143,7 @@ class UserVerificationSerializer(serializers.Serializer):
 
         return value
 
-    def create(self, validated_data: dict) -> dict:
+    def create(self, validated_data: dict) -> AbstractUser:
         db.collection.delete_one({"_id": self._record["_id"]})
 
         user: AbstractUser = self.Meta.model.objects.create_user(
@@ -144,4 +152,4 @@ class UserVerificationSerializer(serializers.Serializer):
             password=utils.Text(string=self._record['password']).decode(),
         )
 
-        return validated_data | dict(user=user)
+        return user

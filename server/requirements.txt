@@ -1,5 +1,6 @@
 django  # WEBSITE
 djangorestframework>=0  # API
+djoser  # JWT
 psycopg2  # POSTGRESQL
 redis  # REDIS (CELERY BROKER)
 pymongo  # MONGODB (REGISTRATION QUEUE)
