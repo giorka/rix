@@ -22,7 +22,7 @@ class UserRegisterFormSerializer(serializers.ModelSerializer):
             'password',
             'email',
         )
-        model: AbstractUser = User  # NOTE: change if another model is used
+        model: AbstractUser = User  # NOTE: Изменить, если используется другая модель
 
     class Settings:
         UNIQUE_FIELDS: Tuple[str] = (
