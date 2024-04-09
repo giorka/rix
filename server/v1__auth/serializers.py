@@ -117,11 +117,11 @@ class UserVerificationSerializer(serializers.Serializer):
 
     def validate(self, attrs: dict) -> dict:
         if not self._record:
-            raise ValidationError('Registration details not found.')
+            raise ValidationError('Регистрационные данные не найдены.')
         elif self._record['attemptsLeft'] == 0:
             db.collection.delete_one({"_id": self._record["_id"]})
 
-            raise ValidationError('Attempts have expired.')
+            raise ValidationError('Попытки закончились.')
 
         return attrs
 
@@ -138,7 +138,7 @@ class UserVerificationSerializer(serializers.Serializer):
             self._record['attemptsLeft'] -= 1
             db.collection.replace_one({"_id": self._record["_id"]}, self._record)
 
-            raise ValidationError('Invalid secret key.')
+            raise ValidationError('Некорректный код.')
 
         return value
 

@@ -11,9 +11,9 @@ DEBUG: Optional[str] = getenv(key='DEBUG')
 
 if not DEBUG:
     load_dotenv()  # loads .env file
-    DEBUG: bool = loads(getenv(key='DEBUG'))
-else:
-    DEBUG: bool = loads(DEBUG)
+    DEBUG: Optional[str] = getenv(key='DEBUG')
+
+DEBUG: bool = loads(DEBUG)
 
 SECRET_KEY = getenv(key='SECRET_KEY')
 
@@ -109,7 +109,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-RU'
 
 TIME_ZONE = 'UTC'
 
