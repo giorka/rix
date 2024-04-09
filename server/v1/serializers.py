@@ -12,5 +12,5 @@ class FileSerializer(serializers.ModelSerializer):
         read_only_fields = ('owner',)
 
     @staticmethod
-    def get_owner(obj) -> str:
+    def get_owner(obj: models.File) -> str:
         return str(obj.owner)

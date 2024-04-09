@@ -18,7 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields: Tuple[str] = (
             'username',
         )
-        model = User  # NOTE: change if another model is used
+        model: AbstractUser = User  # NOTE: change if another model is used
 
 
 class UserRegisterFormSerializer(serializers.ModelSerializer):

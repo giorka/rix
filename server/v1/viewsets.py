@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Type
 from uuid import uuid4
 
 from django.core.files.uploadedfile import TemporaryUploadedFile
@@ -9,17 +9,27 @@ from rest_framework.response import Response
 from . import serializers
 
 
+class AbstractViewSet(viewsets.GenericViewSet):
+    class Meta:
+        prefix: str = ''
+        basename: str = ''
+
+
 class PersonViewSet(
     mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,
     mixins.DestroyModelMixin,
     mixins.ListModelMixin,
-    viewsets.GenericViewSet,
+    AbstractViewSet
 ):
     serializer_class: serializers.FileSerializer = serializers.FileSerializer
     permission_classes: Tuple[permissions.BasePermission] = (
         permissions.IsAuthenticated,
     )
+
+    class Meta:
+        prefix: str = 'files'
+        basename: str = 'files'
 
     def create(self, request, *args, **kwargs) -> Response:
         serializer: serializers.serializers.Serializer = self.serializer_class(data=request.data)
@@ -37,3 +47,8 @@ class PersonViewSet(
     @property
     def queryset(self) -> QuerySet:
         return self.request.user.files.all()
+
+
+VIEW_SETS: Tuple[Type[AbstractViewSet]] = (
+    PersonViewSet,
+)

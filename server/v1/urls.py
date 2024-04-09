@@ -3,9 +3,14 @@ from rest_framework import routers
 
 from . import viewsets
 
-# TODO: for
 router: routers.SimpleRouter = routers.SimpleRouter()
-router.register(prefix='files', viewset=viewsets.PersonViewSet, basename='files')
+
+for view_set in viewsets.VIEW_SETS:
+    router.register(
+        prefix=view_set.Meta.prefix,
+        viewset=viewsets.PersonViewSet,
+        basename=view_set.Meta.basename,
+    )
 
 urlpatterns = (
     *router.urls,
