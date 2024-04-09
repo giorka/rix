@@ -54,7 +54,7 @@ class UserRegisterFormSerializer(serializers.ModelSerializer):
             )
 
             if already_exists:
-                raise ValidationError('A user with that {} already exists.'.format(unique_field))
+                raise ValidationError('Пользователь с таким {} уже существует.'.format(unique_field))
 
         return attrs
 
@@ -64,7 +64,7 @@ class UserRegisterFormSerializer(serializers.ModelSerializer):
         """
 
         if self.Meta.model.objects.filter(email=value).exists():
-            raise ValidationError('A user with that email already exists.')
+            raise ValidationError('Пользователь с таким email уже существует.')
 
         return value
 
