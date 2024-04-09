@@ -13,14 +13,6 @@ from . import db, utils
 from .models import User
 
 
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        fields: Tuple[str] = (
-            'username',
-        )
-        model: AbstractUser = User  # NOTE: change if another model is used
-
-
 class UserRegisterFormSerializer(serializers.ModelSerializer):
     email: fields.EmailField = fields.EmailField()
 

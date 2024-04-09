@@ -34,6 +34,8 @@ DJANGO_APPS = [
 APPS = (
     'v1',
     'v1__auth',
+    'v1__users',
+
 )
 
 INSTALLED_APPS = [
