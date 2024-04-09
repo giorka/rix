@@ -1,3 +1,5 @@
+from typing import Tuple
+
 from django.urls import include, path
 from rest_framework import routers
 
@@ -12,7 +14,7 @@ for view_set in viewsets.VIEW_SETS:
         basename=view_set.Meta.basename,
     )
 
-urlpatterns = (
+urlpatterns: Tuple[path, ...] = (
     *router.urls,
     path('auth/', include('v1__auth.urls')),
     path('users/', include('v1__users.urls')),
