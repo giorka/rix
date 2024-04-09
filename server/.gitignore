@@ -174,3 +174,4 @@ modules.xml
 *.rdb
 /migrations/
 */migrations/*
+storage/

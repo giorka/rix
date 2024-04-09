@@ -1,8 +1,8 @@
-from os import getenv
+from json import loads
+from os import getenv, path
 from pathlib import Path
 
 from dotenv import load_dotenv
-from json import loads
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -136,3 +136,6 @@ MONGO_HOST = f'mongodb://{getenv(key="MONGO_HOST")}:' + str(MONGO_PORT) + '/'
 MONGO_KEY = getenv(key='MONGO_KEY')
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
+
+MEDIA_URL: str = '/storage/'
+MEDIA_ROOT: str = path.join(BASE_DIR, 'storage')

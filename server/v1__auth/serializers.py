@@ -99,13 +99,13 @@ class UserVerificationSerializer(serializers.Serializer):
         ),
         read_only=True
     )
-    # user: UserSerializer = UserSerializer(read_only=True,)
-    email: serializers.EmailField = serializers.EmailField()
+    email: serializers.EmailField = serializers.EmailField(write_only=True)
     code: serializers.CharField = serializers.CharField(
         max_length=6,
         validators=(
             MinLengthValidator(6),
-        )
+        ),
+        write_only=True
     )
 
     class Meta:

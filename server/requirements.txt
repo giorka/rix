@@ -12,3 +12,4 @@ flake8-django-migrations  # LINTER PLUGIN
 django_imap_backend  # EMAIL BACKEND
 celery  # TASK QUEUE
 django_ratelimit>=0  # API RATELIMITS
+uuid  # UUID4
