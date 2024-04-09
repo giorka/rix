@@ -1,15 +1,19 @@
 from json import loads
 from os import getenv, path
 from pathlib import Path
+from typing import Optional
 
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-DEBUG = loads(getenv(key='DEBUG'))
+DEBUG: Optional[str] = getenv(key='DEBUG')
 
-if DEBUG:
-    load_dotenv()
+if not DEBUG:
+    load_dotenv()  # loads .env file
+    DEBUG: bool = loads(getenv(key='DEBUG'))
+else:
+    DEBUG: bool = loads(DEBUG)
 
 SECRET_KEY = getenv(key='SECRET_KEY')
 
