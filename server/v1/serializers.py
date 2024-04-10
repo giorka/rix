@@ -1,5 +1,11 @@
-from rest_framework import serializers
+from typing import Optional
 
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
+from rest_framework.request import Request
+
+from server import settings
 from . import models
 
 
@@ -10,6 +16,16 @@ class FileSerializer(serializers.ModelSerializer):
         model: models.models.Model = models.File
         fields: str = '__all__'
         read_only_fields = ('owner',)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.request: Optional[Request] = None
+
+    def validate_file(self, obj: InMemoryUploadedFile) -> InMemoryUploadedFile:
+        if (obj.size + self.request.user.used_memory) > settings.MAX_USER_MEMORY:
+            raise ValidationError('Превышено максимальное количество выделенной памяти для пользователя.')
+
+        return obj
 
     @staticmethod
     def get_owner(obj: models.File) -> str:

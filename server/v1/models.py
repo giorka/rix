@@ -16,6 +16,13 @@ class File(models.Model):
     )
     file: models.Field = models.FileField(upload_to='files/')
 
+    class Meta:
+        verbose_name: str = 'Файл'
+        verbose_name_plural: str = 'Файлы'
+
+    def __str__(self) -> str:
+        return self.Meta.verbose_name.lower()
+
     def delete(self, *args, **kwargs) -> NoReturn:
         self.file.delete()
         super().delete(*args, **kwargs)

@@ -2,11 +2,12 @@ from typing import Tuple, Type
 from uuid import uuid4
 
 from django.core.files.uploadedfile import TemporaryUploadedFile
-from django.db.models import QuerySet
-from rest_framework import mixins, permissions, viewsets
+from django.db.models import Model, QuerySet
+from rest_framework import mixins, permissions, status, viewsets
+from rest_framework.request import Request
 from rest_framework.response import Response
 
-from . import serializers
+from . import models, serializers
 
 
 class AbstractViewSet(viewsets.GenericViewSet):
@@ -31,22 +32,40 @@ class PersonViewSet(
         prefix: str = 'files'
         basename: str = 'files'
 
-    def create(self, request, *args, **kwargs) -> Response:
+    def create(self, request: Request, *args, **kwargs) -> Response:  # Create
         serializer: serializers.serializers.Serializer = self.serializer_class(data=request.data)
+        serializer.request = request
         serializer.is_valid(raise_exception=True)
         validated_data: dict = serializer.validated_data
 
         temporary_file: TemporaryUploadedFile = validated_data['file']
-        file_name, extension = temporary_file.name.split('.')
+        file_name, *_, extension = temporary_file.name.split('.')
         temporary_file.name = str(uuid4()) + '.' + extension
 
-        self.serializer_class.Meta.model.objects.create(**(validated_data | dict(owner=request.user)))
+        file: models.File = self.serializer_class.Meta.model.objects.create(**validated_data | dict(owner=request.user))
 
-        return Response(data=dict(file=file_name + '.' + extension))
+        request.user.used_memory += temporary_file.size
+        request.user.save()
+
+        return Response(
+            data=self.serializer_class(
+                file, context=dict(request=request)
+            ).data
+        )
 
     @property
-    def queryset(self) -> QuerySet:
+    def queryset(self) -> QuerySet:  # Retrieve
         return self.request.user.files.all()
+
+    def perform_destroy(self, instance: Model) -> Response:  # Destroy
+        deleted_memory: int = instance.file.size
+
+        self.request.user.used_memory -= deleted_memory
+        self.request.user.save()
+
+        instance.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 VIEW_SETS: Tuple[Type[AbstractViewSet]] = (

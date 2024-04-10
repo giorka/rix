@@ -145,3 +145,5 @@ CELERY_BROKER_URL = 'redis://localhost:6379/0'
 
 MEDIA_URL: str = '/storage/'
 MEDIA_ROOT: str = path.join(BASE_DIR, 'storage')
+
+MAX_USER_MEMORY: int = 1_073_741_824  # NOTE: Записано в байтах
