@@ -7,3 +7,4 @@
 ![Nginx](https://img.shields.io/badge/nginx-%23009639.svg?style=for-the-badge&logo=nginx&logoColor=white)
 
 <h1>MyCloud — Russian Independent Cloud Storage Service</h1>
+<img src="https://imgur.com/5QzZ2mP">
