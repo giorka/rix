@@ -13,3 +13,4 @@ django_imap_backend  # EMAIL BACKEND
 celery  # TASK QUEUE
 django_ratelimit>=0  # API RATELIMITS
 uuid  # UUID4
+ruff  # LINTER (FLAKE8 QUICK ALTERNATIVE)

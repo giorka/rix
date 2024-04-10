@@ -175,3 +175,4 @@ modules.xml
 /migrations/
 */migrations/*
 storage/
+.ruff_cache/
