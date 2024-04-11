@@ -31,11 +31,6 @@ repos:
     rev: v2.1.0
     hooks:
       - id: autopep8
-#  - repo: https://github.com/PyCQA/flake8
-#    rev: 7.0.0
-#    hooks:
-#      - id: flake8
-#        args: [ --config=.flake8 ]
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.3.6
     hooks:
