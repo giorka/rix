@@ -18,7 +18,7 @@ class User(AbstractUser):
         verbose_name_plural: str = 'Пользователи'
 
     def __init__(self, *args, **kwargs):
-        super().__init__(args, kwargs)
+        super().__init__(*args, **kwargs)
         self._max_memory: int | None = None
 
     def __str__(self) -> str:

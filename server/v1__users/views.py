@@ -10,8 +10,8 @@ from rest_framework.serializers import Serializer
 from . import serializers
 
 
-class ProfileRetrieveAPIView(generics.RetrieveAPIView):
-    serializer_class: type[Serializer] = serializers.ProfileSerializer
+class UserDetailsRetrieveAPIView(generics.RetrieveAPIView):
+    serializer_class: type[Serializer] = serializers.UserDetailsSerializer
     permission_classes: tuple[BasePermission] = (IsAuthenticated,)
 
     def get_object(self) -> AbstractUser:

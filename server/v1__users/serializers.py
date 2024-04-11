@@ -8,10 +8,14 @@ from v1__auth.models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model: AbstractUser = User  # NOTE: change if another model is used
-        fields: tuple[str, ...] = ('username',)
+        fields: tuple[str, ...] = (
+            'username',
+            'is_premium_user',
+
+        )
 
 
-class ProfileSerializer(serializers.ModelSerializer):
+class UserDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model: AbstractUser = UserSerializer.Meta.model
         fields: tuple[str, ...] = (
