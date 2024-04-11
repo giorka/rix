@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Tuple
-
 from django.urls import include
 from django.urls import path
 from rest_framework import routers

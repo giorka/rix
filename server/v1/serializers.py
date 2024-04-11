@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Optional
-
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -25,7 +23,9 @@ class FileSerializer(serializers.ModelSerializer):
 
     def validate_file(self, obj: InMemoryUploadedFile) -> InMemoryUploadedFile:
         if (obj.size + self.request.user.used_memory) > settings.MAX_USER_MEMORY:
-            raise ValidationError('Превышено максимальное количество выделенной памяти для пользователя.')
+            raise ValidationError(
+                'Превышено максимальное количество выделенной памяти для пользователя.',
+            )
 
         return obj
 

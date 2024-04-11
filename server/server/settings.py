@@ -4,7 +4,6 @@ from json import loads
 from os import getenv
 from os import path
 from pathlib import Path
-from typing import Optional
 
 from dotenv import load_dotenv
 
@@ -38,7 +37,6 @@ APPS = (
     'v1',
     'v1__auth',
     'v1__users',
-
 )
 
 INSTALLED_APPS = [
@@ -47,7 +45,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'djoser',
     'rest_framework.authtoken',
-
 ]
 
 MIDDLEWARE = [

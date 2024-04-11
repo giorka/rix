@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Tuple
-
 from django.urls import path
 from djoser import views as djoser
 
@@ -12,5 +10,4 @@ urlpatterns: tuple[path, ...] = (
     path('device-verification/', views.VerifyAPIView.as_view()),
     path('login/', djoser.TokenCreateView.as_view()),
     path('logout/', djoser.TokenDestroyView.as_view()),
-
 )

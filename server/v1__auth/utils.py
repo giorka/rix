@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from random import randint
-from typing import Optional
 
 from cryptography.fernet import Fernet
 
@@ -27,7 +26,6 @@ class Email:
             email_address=self.email_address,
             subject=subject,
             message=message,
-
         )
 
     def send_code(self):
@@ -47,7 +45,9 @@ class Text:
         fernet = Fernet(key=key)
 
     def encode(self) -> str:
-        return self.Meta.fernet.encrypt(data=bytes(self.string, self.Meta.encoding)).decode(encoding=self.Meta.encoding)
+        return self.Meta.fernet.encrypt(
+            data=bytes(self.string, self.Meta.encoding),
+        ).decode(encoding=self.Meta.encoding)
 
     def decode(self) -> str:
         return self.Meta.fernet.decrypt(self.string).decode(encoding=self.Meta.encoding)

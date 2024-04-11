@@ -3,8 +3,6 @@ from __future__ import annotations
 from datetime import datetime
 from datetime import timedelta
 from typing import NoReturn
-from typing import Optional
-from typing import Tuple
 
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinLengthValidator
@@ -34,7 +32,6 @@ class UserRegisterFormSerializer(serializers.ModelSerializer):
         UNIQUE_FIELDS: tuple[str] = (
             'username',
             'email',
-
         )
         DOCUMENT_EXPIRE_TIME: timedelta = timedelta(seconds=(60 * 2))
         ATTEMPTS_COUNT: int = 3
@@ -52,7 +49,9 @@ class UserRegisterFormSerializer(serializers.ModelSerializer):
             )
 
             if already_exists:
-                raise ValidationError(f'Пользователь с таким {unique_field} уже существует.')
+                raise ValidationError(
+                    f'Пользователь с таким {unique_field} уже существует.',
+                )
 
         return attrs
 
@@ -82,7 +81,10 @@ class UserRegisterFormSerializer(serializers.ModelSerializer):
             document=(
                 data
                 | dict(code=email.code, attemptsLeft=self.Settings.ATTEMPTS_COUNT)
-                | dict(expirationTime=datetime.utcnow() + self.Settings.DOCUMENT_EXPIRE_TIME)
+                | dict(
+                    expirationTime=datetime.utcnow()
+                    + self.Settings.DOCUMENT_EXPIRE_TIME,
+                )
             ),
         )
 
@@ -92,17 +94,13 @@ class UserRegisterFormSerializer(serializers.ModelSerializer):
 class UserVerificationSerializer(serializers.Serializer):
     auth_token: serializers.CharField = serializers.CharField(
         max_length=40,
-        validators=(
-            MinLengthValidator(6),
-        ),
+        validators=(MinLengthValidator(6),),
         read_only=True,
     )
     email: serializers.EmailField = serializers.EmailField(write_only=True)
     code: serializers.CharField = serializers.CharField(
         max_length=6,
-        validators=(
-            MinLengthValidator(6),
-        ),
+        validators=(MinLengthValidator(6),),
         write_only=True,
     )
 

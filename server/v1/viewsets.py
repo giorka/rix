@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Tuple
-from typing import Type
 from uuid import uuid4
 
 from django.core.files.uploadedfile import TemporaryUploadedFile
@@ -41,7 +39,9 @@ class PersonViewSet(
         basename: str = 'files'
 
     def create(self, request: Request, *args, **kwargs) -> Response:  # Create
-        serializer: serializers.serializers.Serializer = self.serializer_class(data=request.data)
+        serializer: serializers.serializers.Serializer = self.serializer_class(
+            data=request.data,
+        )
         serializer.request = request
         serializer.is_valid(raise_exception=True)
         validated_data: dict = serializer.validated_data
@@ -50,14 +50,17 @@ class PersonViewSet(
         file_name, *_, extension = temporary_file.name.split('.')
         temporary_file.name = str(uuid4()) + '.' + extension
 
-        file: models.File = self.serializer_class.Meta.model.objects.create(**validated_data | dict(owner=request.user))
+        file: models.File = self.serializer_class.Meta.model.objects.create(
+            **validated_data | dict(owner=request.user),
+        )
 
         request.user.used_memory += temporary_file.size
         request.user.save()
 
         return Response(
             data=self.serializer_class(
-                file, context=dict(request=request),
+                file,
+                context=dict(request=request),
             ).data,
         )
 
@@ -76,6 +79,4 @@ class PersonViewSet(
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-VIEW_SETS: tuple[type[AbstractViewSet]] = (
-    PersonViewSet,
-)
+VIEW_SETS: tuple[type[AbstractViewSet]] = (PersonViewSet,)
