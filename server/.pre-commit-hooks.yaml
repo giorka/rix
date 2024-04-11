@@ -1,0 +1,6 @@
+-   id: check-added-large-files
+    name: check for added large files
+    description: prevents giant files from being committed.
+    entry: check-added-large-files
+    language: python
+    stages: [commit, push, manual]
