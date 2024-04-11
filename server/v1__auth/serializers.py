@@ -1,5 +1,10 @@
-from datetime import datetime, timedelta
-from typing import NoReturn, Optional, Tuple
+from __future__ import annotations
+
+from datetime import datetime
+from datetime import timedelta
+from typing import NoReturn
+from typing import Optional
+from typing import Tuple
 
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinLengthValidator
@@ -8,16 +13,17 @@ from rest_framework import fields
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from server.settings import DEBUG
-from . import db, utils
+from . import db
+from . import utils
 from .models import User
+from server.settings import DEBUG
 
 
 class UserRegisterFormSerializer(serializers.ModelSerializer):
     email: fields.EmailField = fields.EmailField()
 
     class Meta:
-        fields: Tuple[str] = (
+        fields: tuple[str] = (
             'username',
             'password',
             'email',
@@ -25,7 +31,7 @@ class UserRegisterFormSerializer(serializers.ModelSerializer):
         model: AbstractUser = User  # NOTE: Изменить, если используется другая модель
 
     class Settings:
-        UNIQUE_FIELDS: Tuple[str] = (
+        UNIQUE_FIELDS: tuple[str] = (
             'username',
             'email',
 
@@ -41,12 +47,12 @@ class UserRegisterFormSerializer(serializers.ModelSerializer):
         super().validate(attrs=attrs)
 
         for unique_field in self.Settings.UNIQUE_FIELDS:
-            already_exists: Optional[dict] = db.collection.find_one(
-                {unique_field: attrs.get(unique_field)}
+            already_exists: dict | None = db.collection.find_one(
+                {unique_field: attrs.get(unique_field)},
             )
 
             if already_exists:
-                raise ValidationError('Пользователь с таким {} уже существует.'.format(unique_field))
+                raise ValidationError(f'Пользователь с таким {unique_field} уже существует.')
 
         return attrs
 
@@ -74,10 +80,10 @@ class UserRegisterFormSerializer(serializers.ModelSerializer):
 
         db.collection.insert_one(
             document=(
-                    data
-                    | dict(code=email.code, attemptsLeft=self.Settings.ATTEMPTS_COUNT)
-                    | dict(expirationTime=datetime.utcnow() + self.Settings.DOCUMENT_EXPIRE_TIME)
-            )
+                data
+                | dict(code=email.code, attemptsLeft=self.Settings.ATTEMPTS_COUNT)
+                | dict(expirationTime=datetime.utcnow() + self.Settings.DOCUMENT_EXPIRE_TIME)
+            ),
         )
 
         return validated_data
@@ -89,7 +95,7 @@ class UserVerificationSerializer(serializers.Serializer):
         validators=(
             MinLengthValidator(6),
         ),
-        read_only=True
+        read_only=True,
     )
     email: serializers.EmailField = serializers.EmailField(write_only=True)
     code: serializers.CharField = serializers.CharField(
@@ -97,7 +103,7 @@ class UserVerificationSerializer(serializers.Serializer):
         validators=(
             MinLengthValidator(6),
         ),
-        write_only=True
+        write_only=True,
     )
 
     class Meta:
@@ -105,13 +111,13 @@ class UserVerificationSerializer(serializers.Serializer):
 
     def __init__(self, *args, **kwargs) -> NoReturn:
         super().__init__(*args, **kwargs)
-        self._record: Optional[dict] = None
+        self._record: dict | None = None
 
     def validate(self, attrs: dict) -> dict:
         if not self._record:
             raise ValidationError('Регистрационные данные не найдены.')
         elif self._record['attemptsLeft'] == 0:
-            db.collection.delete_one({"_id": self._record["_id"]})
+            db.collection.delete_one({'_id': self._record['_id']})
 
             raise ValidationError('Попытки закончились.')
 
@@ -128,14 +134,14 @@ class UserVerificationSerializer(serializers.Serializer):
 
         if self._record['code'] != value:
             self._record['attemptsLeft'] -= 1
-            db.collection.replace_one({"_id": self._record["_id"]}, self._record)
+            db.collection.replace_one({'_id': self._record['_id']}, self._record)
 
             raise ValidationError('Некорректный код.')
 
         return value
 
     def create(self, validated_data: dict) -> dict:
-        db.collection.delete_one({"_id": self._record["_id"]})
+        db.collection.delete_one({'_id': self._record['_id']})
 
         user: AbstractUser = self.Meta.model.objects.create_user(
             username=self._record['username'],

@@ -1,22 +1,24 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from random import randint
 from typing import Optional
 
 from cryptography.fernet import Fernet
 
-from server import settings
 from . import tasks
+from server import settings
 
 
 class Email:
     def __init__(self, email_address: str):
         self.email_address: str = email_address
-        self.__code: Optional[str] = None
+        self.__code: str | None = None
 
     @property
     def code(self) -> str:
         if not self.__code:
-            self.__code = ''.join((str(randint(a=0, b=9)) for _ in range(6)))
+            self.__code = ''.join(str(randint(a=0, b=9)) for _ in range(6))
 
         return self.__code
 

@@ -1,13 +1,21 @@
-from typing import Tuple, Type
+from __future__ import annotations
+
+from typing import Tuple
+from typing import Type
 from uuid import uuid4
 
 from django.core.files.uploadedfile import TemporaryUploadedFile
-from django.db.models import Model, QuerySet
-from rest_framework import mixins, permissions, status, viewsets
+from django.db.models import Model
+from django.db.models import QuerySet
+from rest_framework import mixins
+from rest_framework import permissions
+from rest_framework import status
+from rest_framework import viewsets
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from . import models, serializers
+from . import models
+from . import serializers
 
 
 class AbstractViewSet(viewsets.GenericViewSet):
@@ -21,10 +29,10 @@ class PersonViewSet(
     mixins.RetrieveModelMixin,
     mixins.DestroyModelMixin,
     mixins.ListModelMixin,
-    AbstractViewSet
+    AbstractViewSet,
 ):
     serializer_class: serializers.FileSerializer = serializers.FileSerializer
-    permission_classes: Tuple[permissions.BasePermission] = (
+    permission_classes: tuple[permissions.BasePermission] = (
         permissions.IsAuthenticated,
     )
 
@@ -49,8 +57,8 @@ class PersonViewSet(
 
         return Response(
             data=self.serializer_class(
-                file, context=dict(request=request)
-            ).data
+                file, context=dict(request=request),
+            ).data,
         )
 
     @property
@@ -68,6 +76,6 @@ class PersonViewSet(
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-VIEW_SETS: Tuple[Type[AbstractViewSet]] = (
+VIEW_SETS: tuple[type[AbstractViewSet]] = (
     PersonViewSet,
 )

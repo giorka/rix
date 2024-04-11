@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 from typing import Tuple
 
-from django.urls import include, path
+from django.urls import include
+from django.urls import path
 from rest_framework import routers
 
 from . import viewsets
@@ -14,7 +17,7 @@ for view_set in viewsets.VIEW_SETS:
         basename=view_set.Meta.basename,
     )
 
-urlpatterns: Tuple[path, ...] = (
+urlpatterns: tuple[path, ...] = (
     *router.urls,
     path('auth/', include('v1__auth.urls')),
     path('users/', include('v1__users.urls')),

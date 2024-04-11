@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 from json import loads
-from os import getenv, path
+from os import getenv
+from os import path
 from pathlib import Path
 from typing import Optional
 
@@ -7,18 +10,18 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-DEBUG: Optional[str] = getenv(key='DEBUG')
+DEBUG: str | None = getenv(key='DEBUG')
 
 if not DEBUG:
     load_dotenv()  # loads .env file
-    DEBUG: Optional[str] = getenv(key='DEBUG')
+    DEBUG: str | None = getenv(key='DEBUG')
 
 DEBUG: bool = loads(DEBUG)
 
 SECRET_KEY = getenv(key='SECRET_KEY')
 
 ALLOWED_HOSTS = [
-    '127.0.0.1'
+    '127.0.0.1',
 ]
 
 DJANGO_APPS = [

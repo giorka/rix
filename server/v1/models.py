@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 from typing import NoReturn
 from uuid import uuid4
 
 from django.db import models
-
 from v1__auth.models import User
 
 

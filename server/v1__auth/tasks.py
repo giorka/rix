@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from celery import shared_task
 from django.core.mail import send_mail
 
@@ -10,5 +12,5 @@ def send_message(email_address: str, subject: str, message: str):
         subject=subject,
         message=message,
         from_email=settings.EMAIL_HOST_USER,
-        recipient_list=[email_address]
+        recipient_list=[email_address],
     )
