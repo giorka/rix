@@ -14,3 +14,4 @@ celery  # TASK QUEUE
 django_ratelimit>=0  # API RATELIMITS
 uuid  # UUID4
 ruff  # LINTER (FLAKE8 QUICK ALTERNATIVE)
+pre-commit  # PRE-COMMIT
