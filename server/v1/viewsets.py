@@ -49,6 +49,9 @@ class FileViewSet(
         serializer.is_valid(raise_exception=True)
         validated_data: dict = serializer.validated_data
 
+        if not self.request.user.is_premium_user and 'domain' in validated_data:
+            del validated_data['domain']
+
         temporary_file: TemporaryUploadedFile = validated_data['file']
         file_name, *_, extension = temporary_file.name.split('.')
         temporary_file.name = str(uuid4()) + '.' + extension
