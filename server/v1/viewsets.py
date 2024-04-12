@@ -22,7 +22,7 @@ class AbstractViewSet(viewsets.GenericViewSet):
         basename: str = ''
 
 
-class PersonViewSet(
+class FileViewSet(
     mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,
     mixins.DestroyModelMixin,
@@ -79,4 +79,4 @@ class PersonViewSet(
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-VIEW_SETS: tuple[type[AbstractViewSet]] = (PersonViewSet,)
+VIEW_SETS: tuple[type[AbstractViewSet]] = (FileViewSet,)

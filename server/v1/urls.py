@@ -11,7 +11,7 @@ router: routers.SimpleRouter = routers.SimpleRouter()
 for view_set in viewsets.VIEW_SETS:
     router.register(
         prefix=view_set.Meta.prefix,
-        viewset=viewsets.PersonViewSet,
+        viewset=view_set,
         basename=view_set.Meta.basename,
     )
 
