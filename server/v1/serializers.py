@@ -6,6 +6,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.request import Request
 
 from . import models
+from server.settings import ERRORS
 
 
 class FileSerializer(serializers.ModelSerializer):
@@ -23,7 +24,7 @@ class FileSerializer(serializers.ModelSerializer):
     def validate_file(self, obj: InMemoryUploadedFile) -> InMemoryUploadedFile:
         if (obj.size + self.request.user.used_memory) > self.request.user.max_memory:
             raise ValidationError(
-                'Превышено максимальное количество выделенной памяти для пользователя.',
+                ERRORS['NO_MEMORY'],
             )
 
         return obj
