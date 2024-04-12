@@ -12,7 +12,7 @@ class File(models.Model):
     uuid: models.Field = models.UUIDField(
         default=uuid4, primary_key=True, editable=False,
     )
-    name: models.Field = models.CharField(
+    domain: models.Field = models.CharField(
         max_length=16,
         validators=(
             validators.MinLengthValidator(4),

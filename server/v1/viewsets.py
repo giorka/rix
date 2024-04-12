@@ -73,7 +73,7 @@ class FileViewSet(
         if utils.is_valid_uuid(string=query):
             return get_object_or_404(self.model, uuid=query)
 
-        return get_object_or_404(self.model, name=query)
+        return get_object_or_404(self.model, domain=query)
 
     def perform_destroy(self, instance: Model) -> Response:  # Destroy
         deleted_memory: int = instance.file.size
