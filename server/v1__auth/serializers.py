@@ -15,6 +15,7 @@ from . import db
 from . import utils
 from .models import User
 from server.settings import DEBUG
+from server.settings import ERRORS
 
 
 class UserRegisterFormSerializer(serializers.ModelSerializer):
@@ -113,11 +114,11 @@ class UserVerificationSerializer(serializers.Serializer):
 
     def validate(self, attrs: dict) -> dict:
         if not self._record:
-            raise ValidationError('Регистрационные данные не найдены.')
+            raise ValidationError(ERRORS['NO_REGISTRATION_DETAILS'])
         elif self._record['attemptsLeft'] == 0:
             db.collection.delete_one({'_id': self._record['_id']})
 
-            raise ValidationError('Попытки закончились.')
+            raise ValidationError(ERRORS['NO_ATTEMPT'])
 
         return attrs
 
@@ -132,9 +133,11 @@ class UserVerificationSerializer(serializers.Serializer):
 
         if self._record['code'] != value:
             self._record['attemptsLeft'] -= 1
-            db.collection.replace_one({'_id': self._record['_id']}, self._record)
+            db.collection.replace_one(
+                {'_id': self._record['_id']}, self._record,
+            )
 
-            raise ValidationError('Некорректный код.')
+            raise ValidationError(ERRORS['INCORRECT_CODE'])
 
         return value
 
