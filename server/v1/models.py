@@ -3,12 +3,24 @@ from __future__ import annotations
 from typing import NoReturn
 from uuid import uuid4
 
+from django.core import validators
 from django.db import models
 from v1__auth.models import User
 
 
 class File(models.Model):
-    uuid: models.Field = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    uuid: models.Field = models.UUIDField(
+        default=uuid4, primary_key=True, editable=False,
+    )
+    name: models.Field = models.CharField(
+        max_length=16,
+        validators=(
+            validators.MinLengthValidator(4),
+            validators.RegexValidator(r'^[a-z0-9]+\Z'),
+        ),
+        unique=True,
+        null=True,
+    )
     owner: models.Field = models.ForeignKey(
         to=User,
         related_name='files',

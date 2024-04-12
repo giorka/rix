@@ -5,6 +5,7 @@ from uuid import uuid4
 from django.core.files.uploadedfile import TemporaryUploadedFile
 from django.db.models import Model
 from django.db.models import QuerySet
+from django.shortcuts import get_object_or_404
 from rest_framework import mixins
 from rest_framework import permissions
 from rest_framework import status
@@ -14,6 +15,7 @@ from rest_framework.response import Response
 
 from . import models
 from . import serializers
+from . import utils
 
 
 class AbstractViewSet(viewsets.GenericViewSet):
@@ -30,6 +32,7 @@ class FileViewSet(
     AbstractViewSet,
 ):
     serializer_class: serializers.FileSerializer = serializers.FileSerializer
+    model: Model = serializer_class.Meta.model
     permission_classes: tuple[permissions.BasePermission] = (
         permissions.IsAuthenticated,
     )
@@ -50,7 +53,7 @@ class FileViewSet(
         file_name, *_, extension = temporary_file.name.split('.')
         temporary_file.name = str(uuid4()) + '.' + extension
 
-        file: models.File = self.serializer_class.Meta.model.objects.create(
+        file: models.File = self.model.objects.create(
             **validated_data | dict(owner=request.user),
         )
 
@@ -64,9 +67,13 @@ class FileViewSet(
             ).data,
         )
 
-    @property
-    def queryset(self) -> QuerySet:  # Retrieve
-        return self.request.user.files.all()
+    def get_object(self) -> models.File:  # Retrieve
+        query: str = self.kwargs['pk']
+
+        if utils.is_valid_uuid(string=query):
+            return get_object_or_404(self.model, uuid=query)
+
+        return get_object_or_404(self.model, name=query)
 
     def perform_destroy(self, instance: Model) -> Response:  # Destroy
         deleted_memory: int = instance.file.size
@@ -77,6 +84,10 @@ class FileViewSet(
         instance.delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @property
+    def queryset(self) -> QuerySet:  # List
+        return self.request.user.files.all()
 
 
 VIEW_SETS: tuple[type[AbstractViewSet]] = (FileViewSet,)
