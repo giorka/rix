@@ -7,6 +7,8 @@ from rest_framework.request import Request
 
 from . import models
 from server.settings import ERRORS
+from server.settings import MAX_PREMIUM_USER_FILES_COUNT
+from server.settings import MAX_USER_FILES_COUNT
 
 
 class FileSerializer(serializers.ModelSerializer):
@@ -22,7 +24,15 @@ class FileSerializer(serializers.ModelSerializer):
         self.request: Request | None = None
 
     def validate_file(self, obj: InMemoryUploadedFile) -> InMemoryUploadedFile:
-        if (obj.size + self.request.user.used_memory) > self.request.user.max_memory:
+        if self.request.user.files.count() >= (
+                MAX_USER_FILES_COUNT
+                if not self.request.user.is_premium_user
+                else MAX_PREMIUM_USER_FILES_COUNT
+        ):
+            raise ValidationError(
+                ERRORS['NO_FILES_SLOTS'],
+            )
+        elif (obj.size + self.request.user.used_memory) > self.request.user.max_memory:
             raise ValidationError(
                 ERRORS['NO_MEMORY'],
             )

@@ -149,10 +149,14 @@ MEDIA_ROOT: str = path.join(BASE_DIR, 'storage')
 MAX_USER_MEMORY: int = 536_870_912  # NOTE: Записано в байтах
 MAX_PREMIUM_USER_MEMORY: int = 1_073_741_824  # NOTE: Записано в байтах
 
+MAX_USER_FILES_COUNT: int = 25
+MAX_PREMIUM_USER_FILES_COUNT: int = 40
+
 ERRORS: dict[str, str] = dict(
     INCORRECT_CODE='Некорректный код.',
     NO_ATTEMPT='Попытки закончились.',
     NO_REGISTRATION_DETAILS='Регистрационные данные не найдены.',
     NO_MEMORY='Превышено максимальное количество выделенной памяти для пользователя.',
+    NO_FILES_SLOTS='Превышено максимальное количество файлов для пользователя.',
 
 )
