@@ -137,7 +137,7 @@ class UserVerificationSerializer(serializers.Serializer):
                 {'_id': self._record['_id']}, self._record,
             )
 
-            raise ValidationError(ERRORS['INCORRECT_CODE'])
+            raise ValidationError(ERRORS['NO_CORRECT_CODE'])
 
         return value
 

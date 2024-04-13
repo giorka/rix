@@ -153,7 +153,7 @@ MAX_USER_FILES_COUNT: int = 25
 MAX_PREMIUM_USER_FILES_COUNT: int = 40
 
 ERRORS: dict[str, str] = dict(
-    INCORRECT_CODE='Некорректный код.',
+    NO_CORRECT_CODE='Некорректный код.',
     NO_ATTEMPT='Попытки закончились.',
     NO_REGISTRATION_DETAILS='Регистрационные данные не найдены.',
     NO_MEMORY='Превышено максимальное количество выделенной памяти для пользователя.',
