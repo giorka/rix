@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.11
 
 WORKDIR /web
 COPY . /web
@@ -8,4 +8,3 @@ ENV PYTHONUNBUFFERED=1
 
 RUN pip install gunicorn
 RUN pip install -r requirements.txt
-RUN python manage.py migrate
