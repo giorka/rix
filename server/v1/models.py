@@ -3,9 +3,9 @@ from __future__ import annotations
 from typing import NoReturn
 from uuid import uuid4
 
+from django.contrib.auth import get_user_model
 from django.core import validators
 from django.db import models
-from v1__auth.models import User
 
 
 class File(models.Model):
@@ -22,7 +22,7 @@ class File(models.Model):
         null=True,
     )
     owner: models.Field = models.ForeignKey(
-        to=User,
+        to=get_user_model(),
         related_name='files',
         on_delete=models.DO_NOTHING,
 

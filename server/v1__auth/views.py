@@ -6,12 +6,8 @@ from . import serializers
 
 
 class RegisterAPIView(generics.CreateAPIView):
-    serializer_class: type[serializers.UserRegisterFormSerializer] = (
-        serializers.UserRegisterFormSerializer
-    )
+    serializer_class = serializers.UserRegisterFormSerializer
 
 
 class VerifyAPIView(generics.CreateAPIView):
-    serializer_class: type[serializers.UserVerificationSerializer] = (
-        serializers.UserVerificationSerializer
-    )
+    serializer_class = serializers.UserVerificationSerializer

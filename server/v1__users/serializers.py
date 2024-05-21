@@ -1,13 +1,13 @@
 from __future__ import annotations
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from rest_framework import serializers
-from v1__auth.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model: AbstractUser = User  # NOTE: change if another model is used
+        model: AbstractUser = get_user_model()  # NOTE: change if another model is used
         fields: tuple[str, ...] = (
             'username',
             'is_premium_user',

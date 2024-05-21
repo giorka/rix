@@ -35,7 +35,7 @@ DJANGO_APPS = [
 
 APPS = (
     'v1',
-    'v1__auth',
+    'v2__auth',
     'v1__users',
 )
 
@@ -77,7 +77,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'server.wsgi.application'
 
-AUTH_USER_MODEL = 'v1__auth.User'
+AUTH_USER_MODEL: str = 'v2__auth.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -162,4 +162,13 @@ ERRORS: dict[str, str] = dict(
     NO_FILES_SLOTS='Превышено максимальное количество файлов для пользователя.',
     NO_DOMAINS_SLOTS='Превышено максимальное количество файлов с доменным именем для пользователя.',
 
+)
+
+ERRORS_V2: dict[str, str] = dict(
+    NO_CORRECT_CODE='Некорректный код.',
+    NO_REGISTRATION_DETAILS='Регистрационные данные не найдены.',
+    NO_VERIFY_POSSIBILITY='Аккаунт уже верифицирован.',
+    NO_MEMORY='Превышено максимальное количество выделенной памяти для пользователя.',
+    NO_FILES_SLOTS='Превышено максимальное количество файлов для пользователя.',
+    NO_DOMAINS_SLOTS='Превышено максимальное количество файлов с доменным именем для пользователя.',
 )

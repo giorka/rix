@@ -16,7 +16,6 @@ for view_set in viewsets.VIEW_SETS:
     )
 
 urlpatterns: tuple[path, ...] = (
-    *router.urls,
-    path('auth/', include('v1__auth.urls')),
     path('users/', include('v1__users.urls')),
+    *router.urls,
 )
