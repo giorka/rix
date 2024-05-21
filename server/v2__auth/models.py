@@ -7,12 +7,8 @@ from server import settings
 
 
 class User(AbstractUser):
-    """
-    TODO: проверка почты на уникальность
-    """
-
     first_name = last_name = None  # Удаляем поля
-    email: str = models.EmailField(unique=True)
+    email: str = models.EmailField(blank=False)
     is_verified: bool = models.BooleanField(default=False)
     is_premium_user: bool = models.BooleanField(default=False)
     used_memory: int = models.IntegerField(

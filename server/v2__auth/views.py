@@ -28,16 +28,22 @@ class SessionAPIView(APIView):
         DOCUMENT_EXPIRE_TIME: timedelta = timedelta(seconds=(60 * 2))
 
     def post(self, request, *args, **kwargs) -> Response:
-        """
-        TODO: не кидать, если код уже существует
-        """
-
         if request.user.is_verified:
             raise exceptions.ValidationError(
                 settings.ERRORS_V2['NO_VERIFY_POSSIBILITY'],
             )
 
         email_address: str = request.user.email
+
+        record: dict | None = db.collection.find_one(
+            filter=dict(
+                email_address=email_address,
+            ),
+        )
+
+        if record:
+            return Response(data=dict(email=email_address), status=200)
+
         email: utils.Email = utils.Email(email_address=email_address)
         code: str = email.code
 

@@ -14,10 +14,6 @@ from server import settings
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
-    """
-    TODO: проверка почты на уникальность
-    """
-
     auth_token: str = serializers.CharField(
         max_length=40,
         validators=(validators.MinLengthValidator(6),),
