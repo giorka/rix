@@ -1,3 +1,4 @@
+blomp-api  # STORAGE API
 celery  # TASK QUEUE
 cryptography  # AES ENCRYPTION FOR MONGODB
 django  # WEBSITE

@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+import logging
 from json import loads
 from os import getenv
 from os import path
 from pathlib import Path
 
+from blomp_api import Blomp
 from dotenv import load_dotenv
+
+logging.basicConfig(level=logging.DEBUG)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -34,18 +38,18 @@ DJANGO_APPS = [
 ]
 
 APPS = (
-    'v1',
+    'v2',
+    'v2__files',
     'v2__auth',
-    'v1__users',
 )
 
-INSTALLED_APPS = [
+INSTALLED_APPS = (
     *DJANGO_APPS,
     *APPS,
     'rest_framework',
     'djoser',
     'rest_framework.authtoken',
-]
+)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -172,3 +176,10 @@ ERRORS_V2: dict[str, str] = dict(
     NO_FILES_SLOTS='Превышено максимальное количество файлов для пользователя.',
     NO_DOMAINS_SLOTS='Превышено максимальное количество файлов с доменным именем для пользователя.',
 )
+
+logging.debug('Connecting to Blomp...')
+
+storage = Blomp(
+    email=getenv(key='BLOMP_EMAIL'),
+    password=getenv(key='BLOMP_PASSWORD'),
+).get_root_directory()  # FIXME: dotenv
