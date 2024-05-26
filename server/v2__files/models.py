@@ -8,10 +8,12 @@ from v2__auth.models import User
 
 
 class File(models.Model):
-    uuid: models.Field = models.UUIDField(
-        default=uuid4, primary_key=True, editable=False,
+    uuid: str = models.UUIDField(
+        default=uuid4,
+        primary_key=True,
+        editable=False,
     )
-    domain: models.Field = models.CharField(
+    domain: str = models.CharField(
         max_length=16,
         validators=(
             validators.MinLengthValidator(4),
@@ -20,7 +22,7 @@ class File(models.Model):
         unique=True,
         null=True,
     )
-    owner: models.Field = models.ForeignKey(
+    owner: User = models.ForeignKey(
         to=User,
         related_name='files',
         on_delete=models.DO_NOTHING,

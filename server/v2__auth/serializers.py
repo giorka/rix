@@ -13,6 +13,31 @@ from . import db
 from server import settings
 
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model: AbstractUser = get_user_model()
+        fields: tuple[str, ...] = (
+            'username',
+            'is_staff',
+            'is_verified',
+            'is_premium_user',
+        )
+
+
+class DetailedUserSerializer(UserSerializer):
+    max_memory: int = serializers.SerializerMethodField()
+
+    class Meta(UserSerializer.Meta):
+        fields: tuple[str, ...] = UserSerializer.Meta.fields + (
+            'used_memory',
+            'max_memory',
+        )
+
+    @staticmethod
+    def get_max_memory(*_) -> int:
+        return settings.MAX_USER_MEMORY
+
+
 class UserCreateSerializer(serializers.ModelSerializer):
     auth_token: str = serializers.CharField(
         max_length=40,

@@ -5,6 +5,7 @@ from django.core.files.uploadedfile import TemporaryUploadedFile
 from rest_framework import exceptions
 from rest_framework import serializers
 from rest_framework.request import Request
+from v2__auth.serializers import UserSerializer
 
 from . import models
 from server.settings import ERRORS_V2
@@ -13,16 +14,16 @@ from server.settings import storage
 
 
 class FileSerializer(serializers.ModelSerializer):
-    file = serializers.FileField()
+    file = serializers.FileField(write_only=True)
+    owner = UserSerializer(read_only=True)
 
     class Meta:
         model = models.File
         fields = '__all__'
-        read_only_fields = ('owner',)
 
-    def __init__(self, *args, request: Request, **kwargs) -> None:
+    def __init__(self, *args, request: Request = None, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.request: Request = request
+        self.request: Request | None = request  # POST — Request; GET — None;
 
     def create(self, validated_data: dict) -> models.File:
         temporary_file: TemporaryUploadedFile = validated_data['file']

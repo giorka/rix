@@ -5,23 +5,25 @@ from json import loads
 from os import getenv
 from os import path
 from pathlib import Path
+from sys import argv
 
-from blomp_api import Blomp
 from dotenv import load_dotenv
+
+from . import utils
 
 logging.basicConfig(level=logging.DEBUG)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-DEBUG: str | None = getenv(key='DEBUG')
+DEBUG: str | None = getenv('DEBUG')
 
 if not DEBUG:
     load_dotenv()  # loads .env file
-    DEBUG: str | None = getenv(key='DEBUG')
+    DEBUG: str | None = getenv('DEBUG')
 
 DEBUG: bool = loads(DEBUG)
 
-SECRET_KEY = getenv(key='SECRET_KEY')
+SECRET_KEY = getenv('SECRET_KEY')
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
@@ -91,12 +93,12 @@ REST_FRAMEWORK = {
 
 DATABASES = {  # pip install psycopg2
     'default': {
-        'ENGINE': 'django.db.backends.' + getenv(key='DB_ENGINE'),
-        'NAME': getenv(key='DB_NAME'),
-        'USER': getenv(key='DB_USER'),
-        'PASSWORD': getenv(key='DB_PASSWORD'),
-        'HOST': getenv(key='DB_HOST'),
-        'PORT': getenv(key='DB_PORT'),
+        'ENGINE': 'django.db.backends.' + getenv('DB_ENGINE'),
+        'NAME': getenv('DB_NAME'),
+        'USER': getenv('DB_USER'),
+        'PASSWORD': getenv('DB_PASSWORD'),
+        'HOST': getenv('DB_HOST'),
+        'PORT': getenv('DB_PORT'),
     },
 }
 
@@ -130,20 +132,20 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 if not DEBUG:
-    EMAIL_HOST = getenv(key='EMAIL_HOST')
-    EMAIL_PORT = getenv(key='EMAIL_PORT')
-    EMAIL_USE_SSL = loads(getenv(key='EMAIL_USE_SSL'))
+    EMAIL_HOST = getenv('EMAIL_HOST')
+    EMAIL_PORT = getenv('EMAIL_PORT')
+    EMAIL_USE_SSL = loads(getenv('EMAIL_USE_SSL'))
 
-    EMAIL_HOST_USER = getenv(key='EMAIL_HOST_USER')
-    EMAIL_HOST_PASSWORD = getenv(key='EMAIL_HOST_PASSWORD')
+    EMAIL_HOST_USER = getenv('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = getenv('EMAIL_HOST_PASSWORD')
 
     DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
     SERVER_EMAIL = EMAIL_HOST_USER
     EMAIL_ADMIN = EMAIL_HOST_USER
 
 MONGO_PORT = 27017
-MONGO_HOST = f'mongodb://{getenv(key="MONGO_HOST")}:' + str(MONGO_PORT) + '/'
-MONGO_KEY = getenv(key='MONGO_KEY')
+MONGO_HOST = f'mongodb://{getenv("MONGO_HOST")}:' + str(MONGO_PORT) + '/'
+MONGO_KEY = getenv('MONGO_KEY')
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 
@@ -177,9 +179,18 @@ ERRORS_V2: dict[str, str] = dict(
     NO_DOMAINS_SLOTS='Превышено максимальное количество файлов с доменным именем для пользователя.',
 )
 
-logging.debug('Connecting to Blomp...')
+launch_argument: str = argv[1].lower()
 
-storage = Blomp(
-    email=getenv(key='BLOMP_EMAIL'),
-    password=getenv(key='BLOMP_PASSWORD'),
-).get_root_directory()  # FIXME: dotenv
+if launch_argument == 'runserver':
+    logging.debug('Connecting To Storage Server...')
+
+    storage = utils.get_storage(
+        email=getenv('BLOMP_EMAIL'),
+        password=getenv('BLOMP_PASSWORD'),
+    )
+else:
+    logging.debug(
+        f'Storage Server Connection Canceled!\nBecause Of {launch_argument=}',
+    )
+
+    storage = None
