@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from django.core import validators
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.files.uploadedfile import TemporaryUploadedFile
 from rest_framework import exceptions
@@ -15,6 +16,7 @@ from server.settings import storage
 
 class FileSerializer(serializers.ModelSerializer):
     file = serializers.FileField(write_only=True)
+    extension = serializers.CharField(read_only=True)
     owner = UserSerializer(read_only=True)
 
     class Meta:
@@ -23,12 +25,14 @@ class FileSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, request: Request = None, **kwargs) -> None:
         super().__init__(*args, **kwargs)
+        self._extension: str | None = None  # Расширение загружаемого файла
         self.request: Request | None = request  # POST — Request; GET — None;
 
     def create(self, validated_data: dict) -> models.File:
         temporary_file: TemporaryUploadedFile = validated_data['file']
 
         file: models.File = self.Meta.model.objects.create(
+            extension=self._extension,
             domain=(
                 validated_data.get('domain')
                 if self.request.user.is_premium_user else None
@@ -39,11 +43,10 @@ class FileSerializer(serializers.ModelSerializer):
         self.request.user.used_memory += temporary_file.size
         self.request.user.save()
 
-        _, extension = str(temporary_file).split('.')
-
+        # with open(file=temporary_file.temporary_file_path(), mode='wb') as document:
         storage.upload(
-            file=temporary_file.file,
-            file_name=str(file.uuid) + '.' + extension,
+            file=temporary_file.temporary_file_path(),
+            file_name=str(file.uuid) + '.' + self._extension,
         )
 
         return file
@@ -55,5 +58,9 @@ class FileSerializer(serializers.ModelSerializer):
             raise exceptions.ValidationError(ERRORS_V2['NO_MEMORY'])
         elif 'domain' in self.initial_data and (self.request.user.domains + 1) > MAX_USER_DOMAIN:
             raise exceptions.ValidationError(ERRORS_V2['NO_DOMAINS_SLOTS'])
+
+        self._extension = str(file).split('.')[1]
+
+        validators.MaxLengthValidator(8)(self._extension)
 
         return file
