@@ -1,0 +1,51 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: db
+    volumes:
+      - /temp:/var/lib/postgresql/data
+  mongodb:
+    image: mongo:6-jammy
+    ports:
+      - "27017:27017"
+  web:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=false
+      - SECRET_KEY=django-insecure-rz(eowzz$(p2x@#433w5gj8o9=klc)7-=czn-ez&4@4@ek@&3m
+      - MONGO_KEY=gxJWfGudgVUJviYvKYRj6bN2i6uomU3p0DnLIfj16Bc=
+      - DB_ENGINE=postgresql
+      - DB_NAME=db
+      - DB_HOST=db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_PORT=5432
+      - EMAIL_HOST=smtp.yandex.ru
+      - EMAIL_PORT=465
+      - EMAIL_USE_SSL=true
+      - EMAIL_HOST_USER=stepan.shayunov@yandex.ru
+      - EMAIL_HOST_PASSWORD=kfmolfqbmegvmrvo
+      - MONGO_HOST=mongodb
+    depends_on:
+      - db
+      - mongodb
+      - nginx
+  nginx:
+    image: nginx:latest
+    restart: always
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro

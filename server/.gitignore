@@ -1,0 +1,7 @@
+.idea/
+.ruff_cache/
+venv/
+storage/
+*/migrations/*
+.env
+__pycache__/

@@ -1,0 +1,19 @@
+boto3  # STORAGE API
+celery  # TASK QUEUE
+cryptography  # AES ENCRYPTION FOR MONGODB
+django  # WEBSITE
+django_imap_backend  # EMAIL BACKEND
+django_ratelimit>=0  # API RATELIMITS
+djangorestframework>=0  # API
+djoser  # JWT
+flake8  # LINTER
+flake8-django  # LINTER PLUGIN
+flake8-django-migrations  # LINTER PLUGIN
+pre-commit  # PRE-COMMIT
+psycopg2  # POSTGRESQL
+pymongo  # MONGODB (REGISTRATION QUEUE)
+python-dotenv  # DOTENV
+redis  # REDIS (CELERY BROKER)
+requests  # STORAGE API REQUIREMENT
+ruff  # LINTER (FLAKE8 QUICK ALTERNATIVE)
+uuid  # UUID4
