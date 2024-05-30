@@ -6,6 +6,9 @@ from django.core import validators
 from django.db import models
 from v2__auth.models import User
 
+from server.settings import AWS_BUCKET
+from server.settings import storage
+
 
 class File(models.Model):
     uuid = models.UUIDField(
@@ -36,3 +39,14 @@ class File(models.Model):
 
     def __str__(self) -> str:
         return self.Meta.verbose_name.lower()
+
+    @property
+    def filename(self) -> str:
+        return str(self.uuid) + '.' + self.extension
+
+    def delete(self, *args, **kwargs) -> None:
+        storage.delete_object(
+            Bucket=AWS_BUCKET,
+            Key=self.filename,
+        )
+        super().delete(*args, **kwargs)

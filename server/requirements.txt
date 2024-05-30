@@ -1,4 +1,4 @@
-blomp-api  # STORAGE API
+boto3  # STORAGE API
 celery  # TASK QUEUE
 cryptography  # AES ENCRYPTION FOR MONGODB
 django  # WEBSITE

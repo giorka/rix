@@ -7,9 +7,8 @@ from os import path
 from pathlib import Path
 from sys import argv
 
+from boto3 import client
 from dotenv import load_dotenv
-
-from . import utils
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -184,13 +183,17 @@ launch_argument: str = argv[1].lower()
 if launch_argument == 'runserver':
     logging.debug('Connecting To Storage Server...')
 
-    storage = utils.get_storage(
-        email=getenv('BLOMP_EMAIL'),
-        password=getenv('BLOMP_PASSWORD'),
+    storage = client(
+        service_name='s3',
+        endpoint_url='https://' + getenv('AWS_ENDPOINT_URL'),
+        aws_access_key_id=getenv('AWS_ACCESS_KEY_ID'),
+        aws_secret_access_key=getenv('AWS_SECRET_ACCESS_KEY'),
     )
+
+    AWS_BUCKET = getenv('AWS_BUCKET')
 else:
     logging.debug(
         f'Storage Server Connection Canceled!\nBecause Of {launch_argument=}',
     )
 
-    storage = None
+    storage = AWS_BUCKET = None

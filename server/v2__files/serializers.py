@@ -9,6 +9,7 @@ from rest_framework.request import Request
 from v2__auth.serializers import UserSerializer
 
 from . import models
+from server.settings import AWS_BUCKET
 from server.settings import ERRORS_V2
 from server.settings import MAX_USER_DOMAIN
 from server.settings import storage
@@ -43,11 +44,14 @@ class FileSerializer(serializers.ModelSerializer):
         self.request.user.used_memory += temporary_file.size
         self.request.user.save()
 
-        # with open(file=temporary_file.temporary_file_path(), mode='wb') as document:
-        storage.upload(
-            file=temporary_file.temporary_file_path(),
-            file_name=str(file.uuid) + '.' + self._extension,
-        )
+        filename: str = file.filename
+
+        if hasattr(temporary_file, 'temporary_file_path'):
+            storage.upload_file(
+                temporary_file.temporary_file_path(), AWS_BUCKET, filename,
+            )
+        else:
+            storage.upload_fileobj(temporary_file.file, AWS_BUCKET, filename)
 
         return file
 

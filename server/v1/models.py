@@ -1,5 +1,5 @@
-# from __future__ import annotations
-#
+from __future__ import annotations
+
 # from typing import NoReturn
 # from uuid import uuid4
 #
@@ -39,4 +39,3 @@
 #     def delete(self, *args, **kwargs) -> NoReturn:
 #         self.file.delete()
 #         super().delete(*args, **kwargs)
-from __future__ import annotations
