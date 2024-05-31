@@ -4,6 +4,7 @@ from typing import Any
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.password_validation import validate_password
 from django.core import validators
 from djoser.utils import login_user as login
 from rest_framework import exceptions
@@ -12,10 +13,12 @@ from rest_framework import serializers
 from . import db
 from server import settings
 
+user_model: AbstractUser = get_user_model()
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model: AbstractUser = get_user_model()
+        model: AbstractUser = user_model
         fields: tuple[str, ...] = (
             'username',
             'is_staff',
@@ -46,7 +49,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model: AbstractUser = get_user_model()
+        model: AbstractUser = user_model
         write_only_fields: tuple[str, ...] = (
             'username',
             'email',
@@ -61,6 +64,12 @@ class UserCreateSerializer(serializers.ModelSerializer):
                 write_only=True,
             ) for field in write_only_fields
         }
+
+    @staticmethod
+    def validate_password(value: str) -> str:
+        validate_password(value)
+
+        return value
 
     def create(self, validated_data: dict) -> dict:
         return (
@@ -77,7 +86,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
         )
 
 
-class EmailVerificationSerializer(serializers.Serializer):
+class EmailVerifySerializer(serializers.Serializer):
     email: str = serializers.EmailField()
     code: str = serializers.CharField(
         max_length=6,
@@ -103,3 +112,26 @@ class EmailVerificationSerializer(serializers.Serializer):
             )
 
         return value
+
+
+class UserChangePasswordSerializer(serializers.Serializer):
+    password = serializers.CharField(validators=(validate_password,))
+    new_password = serializers.CharField(validators=(validate_password,))
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self._user: AbstractUser | None = None
+
+    def validate_password(self, value: str) -> str:
+        self._user: AbstractUser = self.context['request'].user
+
+        if not self._user.check_password(raw_password=value):
+            raise exceptions.ValidationError('The password is incorrect.')
+
+        return value
+
+    def save(self, **kwargs) -> None:
+        self._user.set_password(
+            raw_password=self.validated_data['new_password'],
+        )
+        self._user.save()

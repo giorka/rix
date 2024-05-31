@@ -178,6 +178,10 @@ ERRORS_V2: dict[str, str] = dict(
     NO_DOMAINS_SLOTS='Превышено максимальное количество файлов с доменным именем для пользователя.',
 )
 
+DJOSER = {
+    'PASSWORD_VALIDATORS': ('django.contrib.auth.password_validation.validate_password',),
+}
+
 launch_argument: str = argv[1].lower()
 
 if launch_argument == 'runserver':
