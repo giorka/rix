@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Any
-
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.password_validation import validate_password
@@ -10,7 +8,7 @@ from djoser.utils import login_user as login
 from rest_framework import exceptions
 from rest_framework import serializers
 
-from . import db
+from . import utils
 from server import settings
 
 user_model: AbstractUser = get_user_model()
@@ -28,7 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class DetailedUserSerializer(UserSerializer):
-    max_memory: int = serializers.SerializerMethodField()
+    max_memory = serializers.SerializerMethodField()
 
     class Meta(UserSerializer.Meta):
         fields: tuple[str, ...] = UserSerializer.Meta.fields + (
@@ -62,7 +60,8 @@ class UserCreateSerializer(serializers.ModelSerializer):
         extra_kwargs: dict[str, dict] = {
             field: dict(
                 write_only=True,
-            ) for field in write_only_fields
+            )
+            for field in write_only_fields
         }
 
     @staticmethod
@@ -72,31 +71,28 @@ class UserCreateSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data: dict) -> dict:
-        return (
-            validated_data
-            |
-            dict(
-                auth_token=login(
-                    request=None,
-                    user=self.Meta.model.objects.create_user(
-                        **validated_data,
-                    ),
+        return validated_data | dict(
+            auth_token=login(
+                request=None,
+                user=self.Meta.model.objects.create_user(
+                    **validated_data,
                 ),
-            )
+            ),
         )
 
 
 class EmailVerifySerializer(serializers.Serializer):
-    email: str = serializers.EmailField()
-    code: str = serializers.CharField(
+    email = serializers.EmailField()
+    code = serializers.CharField(
         max_length=6,
         validators=(validators.MinLengthValidator(6),),
         write_only=True,
     )
 
     def validate_code(self, value: str) -> str:
-        record: dict[str, Any] | None = db.collection.find_one(
-            dict(email_address=self.initial_data['email']),
+        email_address: str = self.initial_data['email']
+        record = utils.verification_queue.find(
+            document=dict(email_address=email_address),
         )
 
         if not record:
@@ -104,7 +100,7 @@ class EmailVerifySerializer(serializers.Serializer):
                 settings.ERRORS_V2['NO_REGISTRATION_DETAILS'],
             )
 
-        db.collection.delete_one({'_id': record['_id']})
+        utils.verification_queue.pop(record['_id'])
 
         if value != record['code']:
             raise exceptions.ValidationError(

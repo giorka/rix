@@ -83,8 +83,7 @@ class UserRegisterFormSerializer(serializers.ModelSerializer):
                 data
                 | dict(code=email.code, attemptsLeft=self.Settings.ATTEMPTS_COUNT)
                 | dict(
-                    expirationTime=datetime.utcnow()
-                    + self.Settings.DOCUMENT_EXPIRE_TIME,
+                    expirationTime=datetime.utcnow() + self.Settings.DOCUMENT_EXPIRE_TIME,
                 )
             ),
         )
@@ -134,7 +133,8 @@ class UserVerificationSerializer(serializers.Serializer):
         if self._record['code'] != value:
             self._record['attemptsLeft'] -= 1
             db.collection.replace_one(
-                {'_id': self._record['_id']}, self._record,
+                {'_id': self._record['_id']},
+                self._record,
             )
 
             raise ValidationError(ERRORS['NO_CORRECT_CODE'])

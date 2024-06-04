@@ -30,7 +30,6 @@ class File(models.Model):
         to=User,
         related_name='files',
         on_delete=models.DO_NOTHING,
-
     )
 
     class Meta:

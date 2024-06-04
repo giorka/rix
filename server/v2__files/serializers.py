@@ -34,10 +34,7 @@ class FileSerializer(serializers.ModelSerializer):
 
         file: models.File = self.Meta.model.objects.create(
             extension=self._extension,
-            domain=(
-                validated_data.get('domain')
-                if self.request.user.is_premium_user else None
-            ),
+            domain=(validated_data.get('domain') if self.request.user.is_premium_user else None),
             owner=self.request.user,
         )
 
@@ -48,7 +45,9 @@ class FileSerializer(serializers.ModelSerializer):
 
         if hasattr(temporary_file, 'temporary_file_path'):
             storage.upload_file(
-                temporary_file.temporary_file_path(), AWS_BUCKET, filename,
+                temporary_file.temporary_file_path(),
+                AWS_BUCKET,
+                filename,
             )
         else:
             storage.upload_fileobj(temporary_file.file, AWS_BUCKET, filename)

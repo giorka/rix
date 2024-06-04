@@ -85,9 +85,7 @@ WSGI_APPLICATION = 'server.wsgi.application'
 AUTH_USER_MODEL: str = 'v2__auth.User'
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
-    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework.authentication.TokenAuthentication',),
 }
 
 DATABASES = {  # pip install psycopg2
@@ -166,7 +164,6 @@ ERRORS: dict[str, str] = dict(
     NO_MEMORY='Превышено максимальное количество выделенной памяти для пользователя.',
     NO_FILES_SLOTS='Превышено максимальное количество файлов для пользователя.',
     NO_DOMAINS_SLOTS='Превышено максимальное количество файлов с доменным именем для пользователя.',
-
 )
 
 ERRORS_V2: dict[str, str] = dict(

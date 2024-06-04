@@ -10,7 +10,6 @@ from server import settings
 urlpatterns: tuple = (
     path('admin/', admin.site.urls),
     path('api/v2/', include('v2.urls')),
-
 )
 
 urlpatterns += tuple(

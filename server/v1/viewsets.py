@@ -33,9 +33,7 @@ class FileViewSet(
 ):
     serializer_class: serializers.FileSerializer = serializers.FileSerializer
     model: Model = serializer_class.Meta.model
-    permission_classes: tuple[permissions.BasePermission] = (
-        permissions.IsAuthenticated,
-    )
+    permission_classes: tuple[permissions.BasePermission] = (permissions.IsAuthenticated,)
 
     class Meta:
         prefix: str = 'files'

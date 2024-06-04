@@ -7,5 +7,5 @@ from server import settings
 client = MongoClient(settings.MONGO_HOST)
 db = client['mycloud']
 
-collection = db['verification_queue']
-collection.create_index('expirationTime', expireAfterSeconds=0)
+verification_queue = db['verification_queue']
+verification_queue.create_index('expirationTime', expireAfterSeconds=0)

@@ -27,12 +27,10 @@ repos:
     hooks:
       - id: pyupgrade
         args: [ --py38-plus ]
-  - repo: https://github.com/hhatto/autopep8
-    rev: v2.1.0
-    hooks:
-      - id: autopep8
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.3.6
+  - repo: local
     hooks:
       - id: ruff
-        args: [ --fix ]
+        name: ruff
+        entry: ruff format server
+        language: system
+        pass_filenames: false

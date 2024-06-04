@@ -15,9 +15,7 @@ user_model: AbstractUser = get_user_model()
 
 class FileCreateAPIView(generics.CreateAPIView):
     serializer_class = serializers.FileSerializer
-    permission_classes: tuple[permissions.BasePermission] = (
-        permissions.IsAuthenticated,
-    )
+    permission_classes: tuple[permissions.BasePermission] = (permissions.IsAuthenticated,)
 
     def create(self, request, *args, **kwargs) -> Response:
         serializer = self.serializer_class(data=request.data, request=request)
@@ -41,9 +39,11 @@ class FileRetrieveDestroyAPIView(generics.RetrieveDestroyAPIView):
 
         # Поле, по которому идёт поиск.
         query_type: str = (
-            'uuid' if utils.is_valid_uuid(
+            'uuid'
+            if utils.is_valid_uuid(
                 string=query,
-            ) else 'domain'
+            )
+            else 'domain'
         )
 
         return get_object_or_404(self.model, owner_id=user.id, **{query_type: query})

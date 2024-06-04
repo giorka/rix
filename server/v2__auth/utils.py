@@ -1,31 +1,70 @@
 from __future__ import annotations
 
+import logging
+from dataclasses import dataclass
+from datetime import datetime
+from datetime import timedelta
 from random import randint
 
+from . import engines
+from . import mongodb
 from . import tasks
+from server.settings import DEBUG
 
 
-class Email:
-    def __init__(self, email_address: str):
-        self.email_address: str = email_address
-        self.__code: str | None = None
+@dataclass
+class EmailService:
+    email_address: str
 
     @property
     def code(self) -> str:
-        if not self.__code:
-            self.__code = ''.join(str(randint(a=0, b=9)) for _ in range(6))
+        return ''.join(str(randint(a=0, b=9)) for _ in range(6))
 
-        return self.__code
+    def send_code(self) -> str:
+        code: str = self.code
 
-    def send_message(self, subject: str, message: str):
+        if DEBUG:
+            logging.info(f'{code = }')
+
+            return code
+
         tasks.send_message.delay(
             email_address=self.email_address,
-            subject=subject,
-            message=message,
+            subject='Подтвердите действие на MyCloud',
+            message='Ваш код подтверждения: ' + code,
         )
 
-    def send_code(self):
-        self.send_message(
-            subject='Подтвердите регистрацию на MyCloud',
-            message='Ваш код подтверждения: ' + self.code,
+        return code
+
+
+@dataclass
+class Queue:
+    engine: engines.MongoDBStackEngine
+
+    class Meta:
+        expire_time = timedelta(seconds=(60 * 2))
+
+    def add(self, email_address: str, code: str) -> str:
+        if self.engine.contains(document=dict(email_address=email_address)):
+            return email_address
+
+        document = dict(
+            email_address=email_address,
+            code=code,
+            expirationTime=datetime.utcnow() + self.Meta.expire_time,
         )
+
+        self.engine.push(document=document)
+
+        return email_address
+
+    def find(self, document: dict) -> dict | None:
+        return self.engine.find(document=document)
+
+    def pop(self, _id: int) -> int:
+        return self.engine.pop(_id=_id)
+
+
+verification_queue = Queue(
+    engine=engines.MongoDBStackEngine(collection=mongodb.verification_queue),
+)

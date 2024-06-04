@@ -11,7 +11,6 @@ class UserSerializer(serializers.ModelSerializer):
         fields: tuple[str, ...] = (
             'username',
             'is_premium_user',
-
         )
 
 

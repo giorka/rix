@@ -28,16 +28,8 @@ class User(AbstractUser):
 
     @property
     def max_memory(self) -> int:
-        return (
-            settings.MAX_USER_MEMORY
-            if not self.is_premium_user
-            else settings.MAX_PREMIUM_USER_MEMORY
-        )
+        return settings.MAX_USER_MEMORY if not self.is_premium_user else settings.MAX_PREMIUM_USER_MEMORY
 
     @property
     def max_files(self) -> int:
-        return (
-            settings.MAX_USER_FILES
-            if not self.is_premium_user
-            else settings.MAX_PREMIUM_USER_FILES
-        )
+        return settings.MAX_USER_FILES if not self.is_premium_user else settings.MAX_PREMIUM_USER_FILES
