@@ -4,6 +4,7 @@ from datetime import datetime
 from datetime import timedelta
 from typing import NoReturn
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinLengthValidator
 from djoser.utils import login_user as login
@@ -13,9 +14,10 @@ from rest_framework.exceptions import ValidationError
 
 from . import db
 from . import utils
-from .models import User
 from server.settings import DEBUG
 from server.settings import ERRORS
+
+user_model = get_user_model()
 
 
 class UserRegisterFormSerializer(serializers.ModelSerializer):
@@ -27,7 +29,7 @@ class UserRegisterFormSerializer(serializers.ModelSerializer):
             'password',
             'email',
         )
-        model: AbstractUser = User  # NOTE: Изменить, если используется другая модель
+        model: AbstractUser = user_model
 
     class Settings:
         UNIQUE_FIELDS: tuple[str] = (
@@ -105,7 +107,7 @@ class UserVerificationSerializer(serializers.Serializer):
     )
 
     class Meta:
-        model: AbstractUser = User
+        model: AbstractUser = user_model
 
     def __init__(self, *args, **kwargs) -> NoReturn:
         super().__init__(*args, **kwargs)

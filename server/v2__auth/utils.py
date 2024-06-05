@@ -44,9 +44,12 @@ class Queue:
     class Meta:
         expire_time = timedelta(seconds=(60 * 2))
 
-    def add(self, email_address: str, code: str) -> str:
+    def add(self, email_address: str) -> str:
         if self.engine.contains(document=dict(email_address=email_address)):
             return email_address
+
+        email_service = EmailService(email_address=email_address)
+        code: str = email_service.send_code()
 
         document = dict(
             email_address=email_address,
@@ -67,4 +70,7 @@ class Queue:
 
 verification_queue = Queue(
     engine=engines.MongoDBStackEngine(collection=mongodb.verification_queue),
+)
+revert_queue = Queue(
+    engine=engines.MongoDBStackEngine(collection=mongodb.revert_queue),
 )

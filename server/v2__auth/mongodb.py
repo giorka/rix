@@ -9,3 +9,6 @@ db = client['mycloud']
 
 verification_queue = db['verification_queue']
 verification_queue.create_index('expirationTime', expireAfterSeconds=0)
+
+revert_queue = db['revert_queue']
+revert_queue.create_index('expirationTime', expireAfterSeconds=0)

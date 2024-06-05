@@ -16,6 +16,10 @@ class UserCreateAPIView(generics.CreateAPIView):
     serializer_class = serializers.UserCreateSerializer
 
 
+class RevertAPIView(generics.CreateAPIView):
+    serializer_class = serializers.RevertSerializer
+
+
 class SessionAPIView(APIView):
     permission_classes: tuple[permissions.BasePermission, ...] = (permissions.IsAuthenticated,)
 
@@ -26,20 +30,14 @@ class SessionAPIView(APIView):
 
         user_email_address: str = request.user.email
 
-        email_service = utils.EmailService(email_address=user_email_address)
-        code: str = email_service.send_code()
-
-        utils.verification_queue.add(
-            email_address=user_email_address,
-            code=code,
-        )
+        utils.verification_queue.add(email_address=user_email_address)
 
         return Response(data=dict(email_address=user_email_address))
 
 
 class EmailVerificationAPIView(APIView):
-    permission_classes: tuple[permissions.BasePermission, ...] = (permissions.IsAuthenticated,)
     serializer_class = serializers.EmailVerifySerializer
+    permission_classes: tuple[permissions.BasePermission, ...] = (permissions.IsAuthenticated,)
 
     @classmethod
     def post(cls, request, *args, **kwargs) -> Response:

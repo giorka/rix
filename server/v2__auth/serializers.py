@@ -7,6 +7,7 @@ from django.core import validators
 from djoser.utils import login_user as login
 from rest_framework import exceptions
 from rest_framework import serializers
+from v2.utils import get_object_or_404
 
 from . import utils
 from server import settings
@@ -81,6 +82,19 @@ class UserCreateSerializer(serializers.ModelSerializer):
         )
 
 
+class RevertSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    @staticmethod
+    def validate_email(value: str) -> str:
+        get_object_or_404(user_model, email=value, is_verified=True)
+
+        return value
+
+    def save(self, **kwargs) -> None:
+        utils.revert_queue.add(email_address=self.validated_data['email'])
+
+
 class EmailVerifySerializer(serializers.Serializer):
     email = serializers.EmailField()
     code = serializers.CharField(
@@ -88,6 +102,13 @@ class EmailVerifySerializer(serializers.Serializer):
         validators=(validators.MinLengthValidator(6),),
         write_only=True,
     )
+
+    @staticmethod
+    def validate_email(value: str) -> str:
+        if user_model.objects.filter(email=value, is_verified=True).exists():
+            raise exceptions.ValidationError(settings.ERRORS_V2['NO_VERIFY_SLOTS'])
+
+        return value
 
     def validate_code(self, value: str) -> str:
         email_address: str = self.initial_data['email']
