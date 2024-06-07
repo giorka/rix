@@ -38,12 +38,6 @@ class FileRetrieveDestroyAPIView(generics.RetrieveDestroyAPIView):
         user = get_object_or_404(user_model, username=self.kwargs['username'])
 
         # Поле, по которому идёт поиск.
-        query_type: str = (
-            'uuid'
-            if utils.is_valid_uuid(
-                string=query,
-            )
-            else 'domain'
-        )
+        query_type: str = 'uuid' if utils.is_valid_uuid(string=query) else 'domain'
 
         return get_object_or_404(self.model, owner_id=user.id, **{query_type: query})

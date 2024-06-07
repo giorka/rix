@@ -38,7 +38,7 @@ class EmailService:
 
 
 @dataclass
-class Queue:
+class EmailQueue:
     engine: engines.MongoDBStackEngine
 
     class Meta:
@@ -67,10 +67,23 @@ class Queue:
     def pop(self, _id: int) -> int:
         return self.engine.pop(_id=_id)
 
+    def is_valid_code(self, email_address: str, excepted_code: str) -> bool:
+        record = self.find(document=dict(email_address=email_address))
 
-verification_queue = Queue(
+        if not record:
+            return False
+
+        self.pop(record['_id'])
+
+        if excepted_code != record['code']:
+            return False
+
+        return True
+
+
+verification_queue = EmailQueue(
     engine=engines.MongoDBStackEngine(collection=mongodb.verification_queue),
 )
-revert_queue = Queue(
+revert_queue = EmailQueue(
     engine=engines.MongoDBStackEngine(collection=mongodb.revert_queue),
 )

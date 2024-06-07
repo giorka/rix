@@ -168,7 +168,6 @@ ERRORS: dict[str, str] = dict(
 
 ERRORS_V2: dict[str, str] = dict(
     NO_CORRECT_CODE='Некорректный код.',
-    NO_REGISTRATION_DETAILS='Регистрационные данные не найдены.',
     NO_VERIFY_POSSIBILITY='Аккаунт уже верифицирован.',
     NO_VERIFY_SLOTS='Превышен лимит одной подтвержденной почты для одной учетной записи.',
     NO_REVERT_POSSIBILITY='Аккаунт для восстановления не найден.',

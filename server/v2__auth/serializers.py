@@ -41,7 +41,7 @@ class DetailedUserSerializer(UserSerializer):
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
-    auth_token: str = serializers.CharField(
+    auth_token = serializers.CharField(
         max_length=40,
         validators=(validators.MinLengthValidator(6),),
         read_only=True,
@@ -95,7 +95,7 @@ class RevertSerializer(serializers.Serializer):
         utils.revert_queue.add(email_address=self.validated_data['email'])
 
 
-class EmailVerifySerializer(serializers.Serializer):
+class EmailCodeRequirementSerializer(serializers.Serializer):
     email = serializers.EmailField()
     code = serializers.CharField(
         max_length=6,
@@ -103,30 +103,49 @@ class EmailVerifySerializer(serializers.Serializer):
         write_only=True,
     )
 
+    class Meta:
+        fields = (
+            'email',
+            'code',
+        )
+        queue: utils.EmailQueue = ...
+
+    def validate_code(self, value: str) -> str:
+        email_address: str = self.initial_data['email']
+
+        if self.Meta.queue.is_valid_code(email_address=email_address, excepted_code=value):
+            return value
+        else:
+            raise exceptions.ValidationError(settings.ERRORS_V2['NO_CORRECT_CODE'])
+
+
+class RevertCompleteSerializer(EmailCodeRequirementSerializer):
+    auth_token = serializers.CharField(
+        max_length=40,
+        validators=(validators.MinLengthValidator(6),),
+        read_only=True,
+    )
+    email = serializers.EmailField(write_only=True)
+    new_password = serializers.CharField(validators=(validate_password,), write_only=True)
+
+    class Meta:
+        queue = utils.revert_queue
+
+    def create(self, validated_data: dict) -> dict:
+        user = get_object_or_404(user_model, email=self.validated_data['email'], is_verified=True)
+        user.set_password(raw_password=self.validated_data['new_password'])
+
+        return {'auth_token': str(login(request=None, user=user))}
+
+
+class EmailVerifySerializer(EmailCodeRequirementSerializer):
+    class Meta:
+        queue = utils.verification_queue
+
     @staticmethod
     def validate_email(value: str) -> str:
         if user_model.objects.filter(email=value, is_verified=True).exists():
             raise exceptions.ValidationError(settings.ERRORS_V2['NO_VERIFY_SLOTS'])
-
-        return value
-
-    def validate_code(self, value: str) -> str:
-        email_address: str = self.initial_data['email']
-        record = utils.verification_queue.find(
-            document=dict(email_address=email_address),
-        )
-
-        if not record:
-            raise exceptions.ValidationError(
-                settings.ERRORS_V2['NO_REGISTRATION_DETAILS'],
-            )
-
-        utils.verification_queue.pop(record['_id'])
-
-        if value != record['code']:
-            raise exceptions.ValidationError(
-                settings.ERRORS_V2['NO_CORRECT_CODE'],
-            )
 
         return value
 
