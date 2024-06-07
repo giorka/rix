@@ -83,10 +83,11 @@ class UserRegisterFormSerializer(serializers.ModelSerializer):
         db.collection.insert_one(
             document=(
                 data
-                | dict(code=email.code, attemptsLeft=self.Settings.ATTEMPTS_COUNT)
-                | dict(
-                    expirationTime=datetime.utcnow() + self.Settings.DOCUMENT_EXPIRE_TIME,
-                )
+                | {
+                    'code': email.code,
+                    'attemptsLeft': self.Settings.ATTEMPTS_COUNT,
+                    'expirationTime': datetime.utcnow() + self.Settings.DOCUMENT_EXPIRE_TIME,
+                }
             ),
         )
 
@@ -124,7 +125,7 @@ class UserVerificationSerializer(serializers.Serializer):
         return attrs
 
     def validate_email(self, value: str) -> str:
-        self._record: dict = db.collection.find_one(dict(email=value))
+        self._record: dict = db.collection.find_one({'email': value})
 
         return value
 
@@ -154,4 +155,4 @@ class UserVerificationSerializer(serializers.Serializer):
 
         auth_token: str = login(request=None, user=user)
 
-        return validated_data | dict(auth_token=auth_token)
+        return validated_data | {'auth_token': auth_token}

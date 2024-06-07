@@ -34,7 +34,7 @@ class SessionAPIView(APIView):
 
         utils.verification_queue.add(email_address=user_email_address)
 
-        return Response(data=dict(email=user_email_address))
+        return Response(data={'email': user_email_address})
 
 
 class EmailVerificationAPIView(APIView):
@@ -46,10 +46,10 @@ class EmailVerificationAPIView(APIView):
         email_address: str = request.user.email
 
         serializer = cls.serializer_class(
-            data=dict(
-                email=email_address,
-                code=request.data.get('code'),
-            ),
+            data={
+                'email': email_address,
+                'code': request.data.get('code'),
+            },
         )
 
         serializer.is_valid(raise_exception=True)

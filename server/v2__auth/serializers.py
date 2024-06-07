@@ -58,12 +58,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
             'auth_token',
             *write_only_fields,
         )
-        extra_kwargs: dict[str, dict] = {
-            field: dict(
-                write_only=True,
-            )
-            for field in write_only_fields
-        }
+        extra_kwargs: dict[str, dict] = {field: {'write_only': True} for field in write_only_fields}
 
     @staticmethod
     def validate_password(value: str) -> str:
@@ -72,14 +67,9 @@ class UserCreateSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data: dict) -> dict:
-        return validated_data | dict(
-            auth_token=login(
-                request=None,
-                user=self.Meta.model.objects.create_user(
-                    **validated_data,
-                ),
-            ),
-        )
+        return validated_data | {
+            'auth_token': login(request=None, user=self.Meta.model.objects.create_user(**validated_data)),
+        }
 
 
 class RevertSerializer(serializers.Serializer):

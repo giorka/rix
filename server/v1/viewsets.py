@@ -55,7 +55,7 @@ class FileViewSet(
         temporary_file.name = str(uuid4()) + '.' + extension
 
         file: models.File = self.model.objects.create(
-            **validated_data | dict(owner=request.user),
+            **validated_data | {'owner': request.user},
         )
 
         request.user.used_memory += temporary_file.size
@@ -64,7 +64,7 @@ class FileViewSet(
         return Response(
             data=self.serializer_class(
                 file,
-                context=dict(request=request),
+                context={'request': request},
             ).data,
         )
 
