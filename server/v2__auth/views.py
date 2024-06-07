@@ -22,7 +22,7 @@ class RevertCompleteCreateAPIView(generics.CreateAPIView):
     serializer_class = serializers.RevertCompleteSerializer
 
 
-class SessionAPIView(APIView):
+class EmailVerificationAPIView(APIView):
     permission_classes: tuple[permissions.BasePermission, ...] = (
         permissions.IsAuthenticated,
         custom_permissions.IsVerified,
@@ -37,8 +37,8 @@ class SessionAPIView(APIView):
         return Response(data={'email': user_email_address})
 
 
-class EmailVerificationAPIView(APIView):
-    serializer_class = serializers.EmailVerifySerializer
+class EmailVerificationCompleteAPIView(APIView):
+    serializer_class = serializers.EmailVerificationCompleteSerializer
     permission_classes: tuple[permissions.BasePermission, ...] = (permissions.IsAuthenticated,)
 
     @classmethod
@@ -61,7 +61,7 @@ class EmailVerificationAPIView(APIView):
 
 
 class ChangePasswordAPIView(generics.CreateAPIView):
-    serializer_class = serializers.UserChangePasswordSerializer
+    serializer_class = serializers.ChangePasswordSerializer
     permission_classes: tuple[permissions.BasePermission, ...] = (
         permissions.IsAuthenticated,
         custom_permissions.IsVerified,

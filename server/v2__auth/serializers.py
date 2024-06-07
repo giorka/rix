@@ -128,7 +128,7 @@ class RevertCompleteSerializer(EmailCodeRequirementSerializer):
         return {'auth_token': str(login(request=None, user=user))}
 
 
-class EmailVerifySerializer(EmailCodeRequirementSerializer):
+class EmailVerificationCompleteSerializer(EmailCodeRequirementSerializer):
     class Meta:
         queue = utils.verification_queue
 
@@ -140,7 +140,7 @@ class EmailVerifySerializer(EmailCodeRequirementSerializer):
         return value
 
 
-class UserChangePasswordSerializer(serializers.Serializer):
+class ChangePasswordSerializer(serializers.Serializer):
     password = serializers.CharField(validators=(validate_password,))
     new_password = serializers.CharField(validators=(validate_password,))
 
