@@ -23,7 +23,7 @@ class RevertCompleteCreateAPIView(generics.CreateAPIView):
 
 
 class EmailVerificationAPIView(APIView):
-    permission_classes: tuple[permissions.BasePermission, ...] = (
+    permission_classes = (
         permissions.IsAuthenticated,
         custom_permissions.IsVerified,
     )
@@ -39,7 +39,7 @@ class EmailVerificationAPIView(APIView):
 
 class EmailVerificationCompleteAPIView(APIView):
     serializer_class = serializers.EmailVerificationCompleteSerializer
-    permission_classes: tuple[permissions.BasePermission, ...] = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     @classmethod
     def post(cls, request, *args, **kwargs) -> Response:
@@ -62,7 +62,7 @@ class EmailVerificationCompleteAPIView(APIView):
 
 class ChangePasswordAPIView(generics.CreateAPIView):
     serializer_class = serializers.ChangePasswordSerializer
-    permission_classes: tuple[permissions.BasePermission, ...] = (
+    permission_classes = (
         permissions.IsAuthenticated,
         custom_permissions.IsVerified,
     )

@@ -8,16 +8,16 @@ from server import settings
 
 class User(AbstractUser):
     first_name = last_name = None  # Удаляем поля
-    email: str = models.EmailField(blank=False)
-    is_verified: bool = models.BooleanField(default=False)
-    is_premium_user: bool = models.BooleanField(default=False)
-    used_memory: int = models.IntegerField(
+    email = models.EmailField(blank=False)
+    is_verified = models.BooleanField(default=False)
+    is_premium_user = models.BooleanField(default=False)
+    used_memory = models.IntegerField(
         default=0,
     )  # NOTE: Записано в байтах
 
     class Meta:
-        verbose_name: str = 'Пользователь'
-        verbose_name_plural: str = 'Пользователи'
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
 
     def __str__(self) -> str:
         return self.Meta.verbose_name.lower()

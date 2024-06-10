@@ -15,7 +15,7 @@ for view_set in viewsets.VIEW_SETS:
         basename=view_set.Meta.basename,
     )
 
-urlpatterns: tuple[path, ...] = (
+urlpatterns = (
     path('users/', include('v1__users.urls')),
     *router.urls,
 )

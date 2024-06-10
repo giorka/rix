@@ -7,7 +7,7 @@ from django.urls import path
 
 from server import settings
 
-urlpatterns: tuple = (
+urlpatterns = (
     path('admin/', admin.site.urls),
     path('api/v2/', include('v2.urls')),
 )

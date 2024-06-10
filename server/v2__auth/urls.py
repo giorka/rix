@@ -5,7 +5,7 @@ from djoser import views as djoser
 
 from . import views
 
-urlpatterns: tuple[path, ...] = (
+urlpatterns = (
     path('register/', views.UserCreateAPIView.as_view()),
     path('revert/', views.RevertCreateAPIView.as_view()),
     path('revert-complete/', views.RevertCompleteCreateAPIView.as_view()),

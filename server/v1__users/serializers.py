@@ -8,7 +8,7 @@ from rest_framework import serializers
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model: AbstractUser = get_user_model()  # NOTE: change if another model is used
-        fields: tuple[str, ...] = (
+        fields = (
             'username',
             'is_premium_user',
         )
@@ -17,7 +17,7 @@ class UserSerializer(serializers.ModelSerializer):
 class UserDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model: AbstractUser = UserSerializer.Meta.model
-        fields: tuple[str, ...] = (
+        fields = (
             *UserSerializer.Meta.fields,
             'email',
         )

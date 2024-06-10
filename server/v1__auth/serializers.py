@@ -24,7 +24,7 @@ class UserRegisterFormSerializer(serializers.ModelSerializer):
     email: fields.EmailField = fields.EmailField()
 
     class Meta:
-        fields: tuple[str] = (
+        fields = (
             'username',
             'password',
             'email',
@@ -32,7 +32,7 @@ class UserRegisterFormSerializer(serializers.ModelSerializer):
         model: AbstractUser = user_model
 
     class Settings:
-        UNIQUE_FIELDS: tuple[str] = (
+        UNIQUE_FIELDS = (
             'username',
             'email',
         )

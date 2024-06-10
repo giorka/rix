@@ -18,7 +18,7 @@ user_model: AbstractUser = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model: AbstractUser = user_model
-        fields: tuple[str, ...] = (
+        fields = (
             'username',
             'is_staff',
             'is_verified',
@@ -30,7 +30,7 @@ class DetailedUserSerializer(UserSerializer):
     max_memory = serializers.SerializerMethodField()
 
     class Meta(UserSerializer.Meta):
-        fields: tuple[str, ...] = UserSerializer.Meta.fields + (
+        fields = UserSerializer.Meta.fields + (
             'used_memory',
             'max_memory',
         )
@@ -49,12 +49,12 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model: AbstractUser = user_model
-        write_only_fields: tuple[str, ...] = (
+        write_only_fields = (
             'username',
             'email',
             'password',
         )
-        fields: tuple[str, ...] = (
+        fields = (
             'auth_token',
             *write_only_fields,
         )

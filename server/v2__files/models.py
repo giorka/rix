@@ -33,15 +33,15 @@ class File(models.Model):
     )
 
     class Meta:
-        verbose_name: str = 'Файл'
-        verbose_name_plural: str = 'Файлы'
+        verbose_name = 'Файл'
+        verbose_name_plural = 'Файлы'
 
     def __str__(self) -> str:
         return self.Meta.verbose_name.lower()
 
     @property
     def filename(self) -> str:
-        return str(self.uuid) + '.' + self.extension
+        return str(self.uuid) + '.' + str(self.extension)
 
     def delete(self, *args, **kwargs) -> None:
         storage.delete_object(
