@@ -6,9 +6,10 @@ from datetime import datetime
 from datetime import timedelta
 from random import randint
 
-from . import engines
-from . import mongodb
-from . import tasks
+from v2__auth import engines
+from v2__auth import mongodb
+from v2__auth import tasks
+
 from server.settings import DEBUG
 
 

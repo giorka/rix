@@ -32,7 +32,7 @@ class EmailVerificationAPIView(APIView):
     def post(cls, request, *args, **kwargs) -> Response:
         user_email_address: str = request.user.email
 
-        utils.verification_queue.add(email_address=user_email_address)
+        utils.email.verification_queue.add(email_address=user_email_address)
 
         return Response(data={'email': user_email_address})
 

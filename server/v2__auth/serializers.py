@@ -82,7 +82,7 @@ class RevertSerializer(serializers.Serializer):
         return value
 
     def save(self, **kwargs) -> None:
-        utils.revert_queue.add(email_address=self.validated_data['email'])
+        utils.email.revert_queue.add(email_address=self.validated_data['email'])
 
 
 class EmailCodeRequirementSerializer(serializers.Serializer):
@@ -94,11 +94,7 @@ class EmailCodeRequirementSerializer(serializers.Serializer):
     )
 
     class Meta:
-        fields = (
-            'email',
-            'code',
-        )
-        queue: utils.EmailQueue = ...
+        queue: utils.email.EmailQueue = ...
 
     def validate_code(self, value: str) -> str:
         email_address: str = self.initial_data['email']
@@ -119,18 +115,18 @@ class RevertCompleteSerializer(EmailCodeRequirementSerializer):
     new_password = serializers.CharField(validators=(validate_password,), write_only=True)
 
     class Meta:
-        queue = utils.revert_queue
+        queue = utils.email.revert_queue
 
     def create(self, validated_data: dict) -> dict:
         user = get_object_or_404(user_model, email=self.validated_data['email'], is_verified=True)
-        user.set_password(raw_password=self.validated_data['new_password'])
+        utils.auth.cp(user, new_password=self.validated_data['new_password'])
 
         return {'auth_token': str(login(request=None, user=user))}
 
 
 class EmailVerificationCompleteSerializer(EmailCodeRequirementSerializer):
     class Meta:
-        queue = utils.verification_queue
+        queue = utils.email.verification_queue
 
     @staticmethod
     def validate_email(value: str) -> str:
@@ -157,7 +153,4 @@ class ChangePasswordSerializer(serializers.Serializer):
         return value
 
     def save(self, **kwargs) -> None:
-        self._user.set_password(
-            raw_password=self.validated_data['new_password'],
-        )
-        self._user.save()
+        utils.auth.cp(self._user, new_password=self.validated_data['new_password'])
