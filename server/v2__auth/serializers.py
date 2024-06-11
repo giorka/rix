@@ -82,7 +82,7 @@ class RevertSerializer(serializers.Serializer):
         return value
 
     def save(self, **kwargs) -> None:
-        utils.email.revert_queue.add(email_address=self.validated_data['email'])
+        utils.email.revert_queue.add(self.validated_data['email'])
 
 
 class EmailCodeRequirementSerializer(serializers.Serializer):
@@ -97,9 +97,9 @@ class EmailCodeRequirementSerializer(serializers.Serializer):
         queue: utils.email.EmailQueue = ...
 
     def validate_code(self, value: str) -> str:
-        email_address: str = self.initial_data['email']
+        email: str = self.initial_data['email']
 
-        if self.Meta.queue.is_valid_code(email_address=email_address, excepted_code=value):
+        if self.Meta.queue.is_valid_code(email, excepted_code=value):
             return value
         else:
             raise exceptions.ValidationError(settings.ERRORS_V2['NO_CORRECT_CODE'])

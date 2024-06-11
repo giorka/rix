@@ -45,22 +45,22 @@ class EmailQueue:
     class Meta:
         expire_time = timedelta(seconds=(60 * 2))
 
-    def add(self, email_address: str) -> str:
-        if self.engine.contains(document={'email_address': email_address}):
-            return email_address
+    def add(self, email: str) -> str:
+        if self.engine.contains(document={'email': email}):
+            return email
 
-        email_service = EmailService(email_address=email_address)
+        email_service = EmailService(email_address=email)
         code: str = email_service.send_code()
 
         document = {
-            'email_address': email_address,
+            'email': email,
             'code': code,
             'expirationTime': datetime.utcnow() + self.Meta.expire_time,
         }
 
         self.engine.push(document=document)
 
-        return email_address
+        return email
 
     def find(self, document: dict) -> dict | None:
         return self.engine.find(document=document)
@@ -68,8 +68,8 @@ class EmailQueue:
     def pop(self, _id: int) -> int:
         return self.engine.pop(_id=_id)
 
-    def is_valid_code(self, email_address: str, excepted_code: str) -> bool:
-        record = self.find(document={'email_address': email_address})
+    def is_valid_code(self, email: str, excepted_code: str) -> bool:
+        record = self.find(document={'email': email})
 
         if not record:
             return False
