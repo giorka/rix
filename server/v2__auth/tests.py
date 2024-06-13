@@ -1,47 +1,32 @@
 from __future__ import annotations
 
-import logging
-from typing import Any
+import json
 
 from django.urls import reverse
-from rest_framework.response import Response
 from rest_framework.test import APITestCase
+from v2.utils import tests as tests_utils
 
 from . import models
+from . import utils
+from .utils import email as email_utils
 
 
-def logging_decorator(target: callable) -> callable:
-    def wrapper(*args, **kwargs) -> Any:
-        response = target(*args, **kwargs)
-
-        logging.debug(str(response.content, 'UTF-8'))
-
-        return response
-
-    return wrapper
-
-
-class ClientMixin:
-    @logging_decorator
-    def post(self: PathBasedAPITestCase, data: dict) -> Response:
-        return self.client.post(self.path, data=data)
-
-
-class PathBasedAPITestCase(APITestCase):
-    path = 'example/url/'
-
-
-class UserCreateAPIViewTestCase(PathBasedAPITestCase, ClientMixin):
+class UserCreateTestCase(APITestCase):
+    client_class = tests_utils.LoggerAPIClient
     path = reverse('register')
 
     def test_all_ok(self) -> None:
+        """
+        Test to verify that an API works with correct data.
+        """
+
         data = {
-            'username': 'test',  # good username
-            'email': 'good_email@gmail.com',  # good email
-            'password': '123456789good_password$',  # good password
+            'username': 'test',
+            'email': 'good_email@gmail.com',
+            'password': '123456789good_password$',
         }
 
-        response = self.post(data)
+        response = self.client.post(self.path, data=data)
 
         self.assertEqual(response.status_code, 201)
         self.assertTrue(models.User.objects.filter(username=data['username'], email=data['email']).exists())
@@ -51,15 +36,15 @@ class UserCreateAPIViewTestCase(PathBasedAPITestCase, ClientMixin):
         Test to verify that an API does not work with taken usernames.
         """
 
-        models.User(username='taken_username').save()
-
         data = {
-            'username': 'taken_username',  # bad username
-            'email': 'good_email@gmail.com',  # good email
-            'password': '123456789good_password$',  # good password
+            'username': 'taken_username',
+            'email': 'good_email@gmail.com',
+            'password': '123456789good_password$',
         }
 
-        response = self.post(data)
+        models.User(username='taken_username').save()
+
+        response = self.client.post(self.path, data=data)
 
         self.assertEqual(response.status_code, 400)
 
@@ -69,12 +54,12 @@ class UserCreateAPIViewTestCase(PathBasedAPITestCase, ClientMixin):
         """
 
         data = {
-            'username': 'test',  # good username
-            'email': 'invalid_email',  # bad email
-            'password': '123456789good_password$',  # good password
+            'username': 'test',
+            'email': 'invalid_email',
+            'password': '123456789good_password$',
         }
 
-        response = self.post(data)
+        response = self.client.post(self.path, data=data)
 
         self.assertEqual(response.status_code, 400)
 
@@ -84,42 +69,118 @@ class UserCreateAPIViewTestCase(PathBasedAPITestCase, ClientMixin):
         """
 
         data = {
-            'username': 'test',  # good username
-            'email': 'good_email@gmail.com',  # good email
-            'password': '123',  # bad password
+            'username': 'test',
+            'email': 'good_email@gmail.com',
+            'password': '123',
         }
 
-        response = self.post(data)
+        response = self.client.post(self.path, data=data)
 
         self.assertEqual(response.status_code, 400)
 
 
-#     def test_revert(self) -> None:
-#         data = {
-#             'username': 'test',
-#             'email': 'test@test.com',
-#         }
-#
-#         user = models.User(**data)
-#         user.set_password(raw_password='12345678a$')
-#         user.is_verified = True
-#         user.save()
-#
-#         document = {'email': data['email']}
-#
-#         response = self.client.post(reverse('revert'), data=document)
-#
-#         self.assertTrue(response.status_code in revert_good_status_codes, msg='Revert Request Failed')
-#
-#         code = utils.email.revert_queue.find({'email': data['email']})['code']
-#         new_password = '987654321$'
-#         document |= {'code': code, 'new_password': new_password}
-#
-#         response = self.client.post(reverse('revert-complete'), data=document)
-#
-#         self.assertTrue(response.status_code in revert_good_status_codes, msg='Revert Confirmation Request Failed')
-#
-#         user = get_object_or_404(models.User, email=data['email'], is_verified=True)
-#         is_password_set = user.check_password(new_password)
-#
-#         self.assertTrue(is_password_set, msg='Error Setting Password')
+class RevertCreateTestCase(APITestCase):
+    client_class = tests_utils.LoggerAPIClient
+    path = reverse('revert')
+
+    def tearDown(self) -> None:
+        utils.email.revert_queue.flush()
+
+    def test_all_ok(self) -> None:
+        """
+        Test to verify that an API works with correct data.
+        """
+
+        models.User(username='test', email='good_email@gmail.com', is_verified=True).save()
+
+        data = {'email': 'good_email@gmail.com'}
+
+        response = self.client.post(self.path, data=data)
+
+        self.assertEqual(response.status_code, 201)
+
+        record = utils.email.revert_queue.find(data['email'])
+
+        self.assertTrue(bool(record))
+
+    def test_not_verified_email(self) -> None:
+        """
+        Test to verify that an API does not work with not verified email.
+        """
+
+        models.User(username='test', email='not_verified_email@gmail.com').save()
+
+        data = {
+            'email': 'not_verified_email@gmail.com',
+        }
+
+        response = self.client.post(self.path, data=data)
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_nonexistent_email(self) -> None:
+        data = {
+            'email': 'nonexistent_email@gmail.com',
+        }
+
+        response = self.client.post(self.path, data=data)
+
+        self.assertEqual(response.status_code, 404)
+
+
+class RevertCompleteCreateTestCase(APITestCase):
+    client_class = tests_utils.LoggerAPIClient
+    path = reverse('revert-complete')
+
+    def setUp(self) -> None:
+        email = 'good_email@gmail.com'
+
+        models.User(username='test', email=email, is_verified=True).save()
+
+        utils.email.revert_queue.add(email)
+
+        self._code: str = utils.email.revert_queue.find(email)['code']
+
+    def tearDown(self) -> None:
+        utils.email.revert_queue.flush()
+
+    def test_all_ok(self) -> None:
+        """
+        Test to verify that an API works with correct data.
+        """
+
+        data = {'email': 'good_email@gmail.com', 'code': self._code, 'new_password': '123456789good_password$'}
+
+        response = self.client.post(self.path, data=data)
+
+        self.assertEqual(response.status_code, 201)
+
+        content = json.loads(response.content)
+        self.assertTrue(content.get('auth_token') is not None)
+
+    def test_invalid_email(self) -> None:
+        """
+        Test to verify that an API does not work with invalid emails.
+        """
+
+        data = {'email': 'invalid_email', 'code': self._code, 'new_password': '123456789good_password$'}
+
+        response = self.client.post(self.path, data=data)
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_invalid_code(self) -> None:
+        """
+        Test to verify that an API does not work with invalid codes.
+        """
+
+        invalid_code: str = email_utils.EmailService.generate_code()
+
+        while invalid_code == self._code:
+            invalid_code = email_utils.EmailService.generate_code()
+
+        data = {'email': 'good_email@gmail.com', 'code': invalid_code, 'new_password': '123456789good_password$'}
+
+        response = self.client.post(self.path, data=data)
+
+        self.assertEqual(response.status_code, 400)

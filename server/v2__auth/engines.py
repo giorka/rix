@@ -8,13 +8,25 @@ from pymongo.collection import Collection
 
 
 class BaseStackEngine(ABC):
-    @classmethod
     @abstractmethod
-    def push(cls, document: dict) -> dict: ...
+    def push(self, document: dict) -> dict:
+        raise NotImplementedError()
 
-    @classmethod
     @abstractmethod
-    def contains(cls, document: dict) -> bool: ...
+    def find(self, document: dict) -> dict | None:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def contains(self, document: dict) -> bool:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def pop(self, _id: int) -> int:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def flush(self) -> None:
+        raise NotImplementedError()
 
 
 @dataclass
@@ -36,3 +48,6 @@ class MongoDBStackEngine(BaseStackEngine):
         self.collection.delete_one({'_id': _id})
 
         return _id
+
+    def flush(self) -> None:
+        self.collection.delete_many({})

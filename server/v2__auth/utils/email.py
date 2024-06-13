@@ -17,12 +17,12 @@ from server.settings import DEBUG
 class EmailService:
     email_address: str
 
-    @property
-    def code(self) -> str:
+    @staticmethod
+    def generate_code() -> str:
         return ''.join(str(randint(a=0, b=9)) for _ in range(6))
 
     def send_code(self) -> str:
-        code: str = self.code
+        code: str = self.generate_code()
 
         if DEBUG:
             logging.info(f'{code = }')
@@ -40,10 +40,13 @@ class EmailService:
 
 @dataclass
 class EmailQueue:
-    engine: engines.MongoDBStackEngine
+    engine: engines.BaseStackEngine
 
     class Meta:
         expire_time = timedelta(seconds=(60 * 2))
+
+    def __getattr__(self, item: str) -> callable:
+        return getattr(self.engine, item)
 
     def add(self, email: str) -> str:
         if self.engine.contains(document={'email': email}):
@@ -62,14 +65,11 @@ class EmailQueue:
 
         return email
 
-    def find(self, document: dict) -> dict | None:
-        return self.engine.find(document=document)
-
-    def pop(self, _id: int) -> int:
-        return self.engine.pop(_id=_id)
+    def find(self, email: str) -> dict | None:
+        return self.engine.find(document={'email': email})
 
     def is_valid_code(self, email: str, excepted_code: str) -> bool:
-        record = self.find(document={'email': email})
+        record = self.find(email)
 
         if not record:
             return False
@@ -82,9 +82,5 @@ class EmailQueue:
         return True
 
 
-verification_queue = EmailQueue(
-    engine=engines.MongoDBStackEngine(collection=mongodb.verification_queue),
-)
-revert_queue = EmailQueue(
-    engine=engines.MongoDBStackEngine(collection=mongodb.revert_queue),
-)
+verification_queue = EmailQueue(engine=engines.MongoDBStackEngine(collection=mongodb.verification_queue))
+revert_queue = EmailQueue(engine=engines.MongoDBStackEngine(collection=mongodb.revert_queue))

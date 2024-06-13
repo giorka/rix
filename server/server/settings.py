@@ -176,6 +176,8 @@ ERRORS_V2: dict[str, str] = {
     'NO_DOMAINS_SLOTS': 'Превышено максимальное количество файлов с доменным именем для пользователя',
 }
 
+# TODO: убрать аннотации
+
 launch_argument: str = argv[1].lower()
 
 if launch_argument == 'runserver':

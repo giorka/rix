@@ -7,7 +7,7 @@ from django.core import validators
 from djoser.utils import login_user as login
 from rest_framework import exceptions
 from rest_framework import serializers
-from v2.utils import get_object_or_404
+from v2.utils.orm import get_object_or_404
 
 from . import utils
 from server import settings
