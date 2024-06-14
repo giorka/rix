@@ -6,12 +6,15 @@ django_imap_backend  # EMAIL BACKEND
 django_ratelimit>=0  # API RATELIMITS
 djangorestframework>=0  # API
 djoser  # JWT
+faker  # TESTING ARBITRARY DATA
 flake8  # LINTER
 flake8-django  # LINTER PLUGIN
 flake8-django-migrations  # LINTER PLUGIN
 pre-commit  # PRE-COMMIT
 psycopg2  # POSTGRESQL
 pymongo  # MONGODB (REGISTRATION QUEUE)
+pytest  # TESTING
+pytest-django  # DJANGO TESTING
 python-dotenv  # DOTENV
 redis  # REDIS (CELERY BROKER)
 requests  # STORAGE API REQUIREMENT

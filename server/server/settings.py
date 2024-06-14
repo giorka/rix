@@ -178,9 +178,12 @@ ERRORS_V2: dict[str, str] = {
 
 # TODO: убрать аннотации
 
-launch_argument: str = argv[1].lower()
+if len(argv) < 2:
+    launch_argument: str = 'unknown'
+else:
+    launch_argument: str = argv[1].lower()
 
-if launch_argument == 'runserver':
+if launch_argument in ('runserver', 'test'):
     logging.debug('Connecting To Storage Server...')
 
     storage = client(
