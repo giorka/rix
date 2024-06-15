@@ -145,18 +145,18 @@ MONGO_KEY = getenv('MONGO_KEY')
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 
-MEDIA_URL: str = '/storage/'
-MEDIA_ROOT: str = path.join(BASE_DIR, 'storage')
+MEDIA_URL = '/storage/'
+MEDIA_ROOT = path.join(BASE_DIR, 'storage')
 
-MAX_USER_MEMORY: int = 536_870_912  # NOTE: Записано в байтах
-MAX_PREMIUM_USER_MEMORY: int = 1_073_741_824  # NOTE: Записано в байтах
+MAX_USER_MEMORY = 536_870_912  # NOTE: Записано в байтах
+MAX_PREMIUM_USER_MEMORY = 1_073_741_824  # NOTE: Записано в байтах
 
-MAX_USER_FILES: int = 25  # NOTE: Записано в единицах
-MAX_PREMIUM_USER_FILES: int = 40  # NOTE: Записано в единицах
+MAX_USER_FILES = 25  # NOTE: Записано в единицах
+MAX_PREMIUM_USER_FILES = 40  # NOTE: Записано в единицах
 
-MAX_USER_DOMAIN: int = 2  # NOTE: Записано в единицах.
+MAX_USER_DOMAIN = 2  # NOTE: Записано в единицах.
 
-ERRORS: dict[str, str] = {
+ERRORS = {
     'NO_CORRECT_CODE': 'Некорректный код.',
     'NO_ATTEMPT': 'Попытки закончились.',
     'NO_REGISTRATION_DETAILS': 'Регистрационные данные не найдены.',
@@ -165,7 +165,7 @@ ERRORS: dict[str, str] = {
     'NO_DOMAINS_SLOTS': 'Превышено максимальное количество файлов с доменным именем для пользователя',
 }
 
-ERRORS_V2: dict[str, str] = {
+ERRORS_V2 = {
     'NO_CORRECT_CODE': 'Некорректный код.',
     'NO_VERIFY_POSSIBILITY': 'Аккаунт уже верифицирован.',
     'NO_VERIFY_SLOTS': 'Превышен лимит одной подтвержденной почты для одной учетной записи.',
@@ -174,8 +174,6 @@ ERRORS_V2: dict[str, str] = {
     'NO_FILES_SLOTS': 'Превышено максимальное количество файлов для пользователя.',
     'NO_DOMAINS_SLOTS': 'Превышено максимальное количество файлов с доменным именем для пользователя',
 }
-
-# TODO: убрать аннотации
 
 if len(argv) < 2:
     launch_argument: str = 'unknown'
