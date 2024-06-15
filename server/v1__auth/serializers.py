@@ -1,21 +1,18 @@
 from __future__ import annotations
 
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import NoReturn
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinLengthValidator
 from djoser.utils import login_user as login
-from rest_framework import fields
-from rest_framework import serializers
+from rest_framework import fields, serializers
 from rest_framework.exceptions import ValidationError
 
-from . import db
-from . import utils
-from server.settings import DEBUG
-from server.settings import ERRORS
+from server.settings import DEBUG, ERRORS
+
+from . import db, utils
 
 user_model = get_user_model()
 

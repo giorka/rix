@@ -2,8 +2,7 @@ from __future__ import annotations
 
 import logging
 from json import loads
-from os import getenv
-from os import path
+from os import getenv, path
 from pathlib import Path
 from sys import argv
 

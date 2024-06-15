@@ -3,9 +3,9 @@ from __future__ import annotations
 import pytest
 from django.urls import reverse
 from rest_framework.test import APIClient
+
 from tests import constants
-from v2__auth import models
-from v2__auth import utils
+from v2__auth import models, utils
 
 
 @pytest.mark.django_db

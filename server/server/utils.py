@@ -3,8 +3,7 @@ from __future__ import annotations
 import logging
 from time import sleep
 
-from blomp_api import Blomp
-from blomp_api import fso
+from blomp_api import Blomp, fso
 from requests import exceptions
 
 

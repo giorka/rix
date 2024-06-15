@@ -2,13 +2,12 @@ from __future__ import annotations
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
-from rest_framework import generics
-from rest_framework import permissions
+from rest_framework import generics, permissions
 from rest_framework.response import Response
+
 from v2.utils.orm import get_object_or_404
 
-from . import serializers
-from . import utils
+from . import serializers, utils
 
 user_model: AbstractUser = get_user_model()
 

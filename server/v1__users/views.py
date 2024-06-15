@@ -3,8 +3,7 @@ from __future__ import annotations
 from django.contrib.auth.models import AbstractUser
 from django.db.models import QuerySet
 from rest_framework import generics
-from rest_framework.permissions import BasePermission
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import BasePermission, IsAuthenticated
 from rest_framework.serializers import Serializer
 
 from . import serializers

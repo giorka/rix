@@ -1,18 +1,14 @@
 from __future__ import annotations
 
 from django.core import validators
-from django.core.files.uploadedfile import InMemoryUploadedFile
-from django.core.files.uploadedfile import TemporaryUploadedFile
-from rest_framework import exceptions
-from rest_framework import serializers
+from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
+from rest_framework import exceptions, serializers
 from rest_framework.request import Request
+
+from server.settings import AWS_BUCKET, ERRORS_V2, MAX_USER_DOMAIN, storage
 from v2__auth.serializers import UserSerializer
 
 from . import models
-from server.settings import AWS_BUCKET
-from server.settings import ERRORS_V2
-from server.settings import MAX_USER_DOMAIN
-from server.settings import storage
 
 
 class FileSerializer(serializers.ModelSerializer):

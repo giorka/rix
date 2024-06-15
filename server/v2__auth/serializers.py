@@ -5,12 +5,12 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.password_validation import validate_password
 from django.core import validators
 from djoser.utils import login_user as login
-from rest_framework import exceptions
-from rest_framework import serializers
+from rest_framework import exceptions, serializers
+
+from server import settings
 from v2.utils.orm import get_object_or_404
 
 from . import utils
-from server import settings
 
 user_model: AbstractUser = get_user_model()
 

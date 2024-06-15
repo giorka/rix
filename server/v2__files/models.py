@@ -4,10 +4,9 @@ from uuid import uuid4
 
 from django.core import validators
 from django.db import models
-from v2__auth.models import User
 
-from server.settings import AWS_BUCKET
-from server.settings import storage
+from server.settings import AWS_BUCKET, storage
+from v2__auth.models import User
 
 
 class File(models.Model):

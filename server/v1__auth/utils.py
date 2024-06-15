@@ -5,8 +5,9 @@ from random import randint
 
 from cryptography.fernet import Fernet
 
-from . import tasks
 from server import settings
+
+from . import tasks
 
 
 class Email:

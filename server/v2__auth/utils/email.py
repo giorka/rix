@@ -2,15 +2,11 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 from random import randint
 
-from v2__auth import engines
-from v2__auth import mongodb
-from v2__auth import tasks
-
 from server.settings import DEBUG
+from v2__auth import engines, mongodb, tasks
 
 
 @dataclass

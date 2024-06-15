@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-from rest_framework import generics
-from rest_framework import permissions
+from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from . import permissions as custom_permissions
-from . import serializers
-from . import utils
+from . import serializers, utils
 
 
 class UserCreateAPIView(generics.CreateAPIView):

@@ -3,19 +3,13 @@ from __future__ import annotations
 from uuid import uuid4
 
 from django.core.files.uploadedfile import TemporaryUploadedFile
-from django.db.models import Model
-from django.db.models import QuerySet
+from django.db.models import Model, QuerySet
 from django.shortcuts import get_object_or_404
-from rest_framework import mixins
-from rest_framework import permissions
-from rest_framework import status
-from rest_framework import viewsets
+from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from . import models
-from . import serializers
-from . import utils
+from . import models, serializers, utils
 
 
 class AbstractViewSet(viewsets.GenericViewSet):

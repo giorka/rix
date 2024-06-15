@@ -5,9 +5,9 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.request import Request
 
+from server.settings import ERRORS, MAX_USER_DOMAIN
+
 from . import models
-from server.settings import ERRORS
-from server.settings import MAX_USER_DOMAIN
 
 
 class FileSerializer(serializers.ModelSerializer):

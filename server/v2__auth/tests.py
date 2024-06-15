@@ -4,10 +4,10 @@ import json
 
 from django.urls import reverse
 from rest_framework.test import APITestCase
+
 from v2.utils import tests as tests_utils
 
-from . import models
-from . import utils
+from . import models, utils
 from .utils import email as email_utils
 
 
