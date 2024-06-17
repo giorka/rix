@@ -16,10 +16,6 @@ class BaseStackEngine(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def contains(self, document: dict) -> bool:
-        raise NotImplementedError()
-
-    @abstractmethod
     def pop(self, _id: int) -> int:
         raise NotImplementedError()
 
@@ -39,9 +35,6 @@ class MongoDBStackEngine(BaseStackEngine):
 
     def find(self, document: dict) -> dict | None:
         return self.collection.find_one(document)
-
-    def contains(self, document: dict) -> bool:
-        return bool(self.find(document=document))
 
     def pop(self, _id: int) -> int:
         self.collection.delete_one({'_id': _id})

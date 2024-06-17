@@ -44,9 +44,11 @@ class EmailQueue:
     def __getattr__(self, item: str) -> callable:
         return getattr(self.engine, item)
 
-    def add(self, email: str) -> str:
-        if self.engine.contains(document={'email': email}):
-            return email
+    def add(self, email: str) -> dict:
+        existing_document: dict | None = self.engine.find(document={'email': email})
+
+        if bool(existing_document):
+            return existing_document
 
         email_service = EmailService(email_address=email)
         code: str = email_service.send_code()
@@ -59,7 +61,7 @@ class EmailQueue:
 
         self.engine.push(document=document)
 
-        return email
+        return document
 
     def find(self, email: str) -> dict | None:
         return self.engine.find(document={'email': email})

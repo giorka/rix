@@ -36,15 +36,15 @@ def test_revert(client: APIClient, faker: Faker) -> None:
     utils.email.revert_queue.flush()
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db()
 def test_revert_complete(client: APIClient, faker: Faker) -> None:
     email, password = faker.email(), faker.password(length=8)
 
     models.User(username=faker.user_name(), email=email, is_verified=True).save()
 
-    utils.email.revert_queue.add(email)  # TODO: возвращать документ
+    document: dict = utils.email.revert_queue.add(email)
 
-    code: str = utils.email.revert_queue.find(email)['code']
+    code: str = document['code']
 
     response = client.post(
         reverse('revert-complete'),
