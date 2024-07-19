@@ -26,4 +26,4 @@ docker-compose up
 - ⛔ Tests
 - ⛔ Docker Compose
 
-<img src="https://i.imgur.com/5QzZ2mP.png">
+<img src="https://github.com/giorka/rix/blob/master/banner.png">
